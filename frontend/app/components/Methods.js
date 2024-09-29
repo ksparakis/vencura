@@ -12,7 +12,7 @@ export default function DynamicMethods({ isDarkMode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [result, setResult] = useState('');
 
-  
+
   const safeStringify = (obj) => {
     const seen = new WeakSet();
     return JSON.stringify(obj, (key, value) => {
@@ -76,12 +76,12 @@ export default function DynamicMethods({ isDarkMode }) {
             <button className="btn btn-primary" onClick={showUser}>Fetch User</button>
             <button className="btn btn-primary" onClick={showUserWallets}>Fetch User Wallets</button>
 
-            
+
     {isEthereumWallet(primaryWallet) &&
       <>
         <button className="btn btn-primary" onClick={fetchPublicClient}>Fetch Public Client</button>
         <button className="btn btn-primary" onClick={fetchWalletClient}>Fetch Wallet Client</button>
-        <button className="btn btn-primary" onClick={signMessage}>Sign 'Hello World' on Ethereum</button>    
+        <button className="btn btn-primary" onClick={signMessage}>Sign &apos;Hello World&apos; on Ethereum</button>
       </>
     }
 
