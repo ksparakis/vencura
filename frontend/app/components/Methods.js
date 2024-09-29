@@ -40,6 +40,11 @@ export default function DynamicMethods({ isDarkMode }) {
     setResult(safeStringify(user));
   }
 
+    function showJWT() {
+        const token = localStorage.getItem('dynamic_authentication_token');
+
+        setResult(safeStringify(token));
+    }
   function showUserWallets() {
     setResult(safeStringify(userWallets));
   }
@@ -72,23 +77,25 @@ export default function DynamicMethods({ isDarkMode }) {
     <>
       {!isLoading && (
         <div className="dynamic-methods" data-theme={isDarkMode ? 'dark' : 'light'}>
-          <div className="methods-container">
-            <button className="btn btn-primary" onClick={showUser}>Fetch User</button>
-            <button className="btn btn-primary" onClick={showUserWallets}>Fetch User Wallets</button>
+            <div className="methods-container">
+                <button className="btn btn-primary" onClick={showUser}>Fetch User</button>
+                <button className="btn btn-primary" onClick={showUserWallets}>Fetch User Wallets</button>
+                <button className="btn btn-primary" onClick={showJWT}>Show the JWT</button>
 
+                {isEthereumWallet(primaryWallet) &&
+                    <>
+                        <button className="btn btn-primary" onClick={fetchPublicClient}>Fetch Public Client</button>
+                        <button className="btn btn-primary" onClick={fetchWalletClient}>Fetch Wallet Client</button>
+                        <button className="btn btn-primary" onClick={signMessage}>Sign &apos;Hello World&apos; on
+                            Ethereum
+                        </button>
+                    </>
+                }
 
-    {isEthereumWallet(primaryWallet) &&
-      <>
-        <button className="btn btn-primary" onClick={fetchPublicClient}>Fetch Public Client</button>
-        <button className="btn btn-primary" onClick={fetchWalletClient}>Fetch Wallet Client</button>
-        <button className="btn btn-primary" onClick={signMessage}>Sign &apos;Hello World&apos; on Ethereum</button>
-      </>
-    }
-
-        </div>
-          {result && (
-            <div className="results-container">
-              <pre className="results-text">{result}</pre>
+            </div>
+            {result && (
+                <div className="results-container">
+                    <pre className="results-text">{result}</pre>
             </div>
           )}
           {result && (

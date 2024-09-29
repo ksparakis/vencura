@@ -10,13 +10,13 @@ export default function Providers({
   children: React.ReactNode;
 }) {
 
-  
+
 
   return (
     <DynamicContextProvider
       theme="auto"
       settings={{
-        environmentId: "2762a57b-faa4-41ce-9f16-abff9300e2c9",
+        environmentId: "69b77dec-b184-44c0-8517-d8927eff1d32",
            walletConnectors: [EthereumWalletConnectors],
       }}
     >
