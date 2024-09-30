@@ -56,6 +56,24 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+  createUser:
+    handler: src/handlers/createUser.handler
+    events:
+      - http:
+          path: user
+          method: POST
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
+  getUser:
+    handler: src/handlers/getUser.handler
+    events:
+      - http:
+          path: user
+          method: GET
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
   dynamicAuthorizer:
     handler: src/handlers/dynamicAuthorizer.handler
 

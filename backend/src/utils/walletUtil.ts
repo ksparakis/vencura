@@ -1,10 +1,6 @@
 import type {APIGatewayProxyEvent} from "aws-lambda";
 import {ethers} from "ethers";
 
-function getWallet(req: APIGatewayProxyEvent):string{
-    return req.requestContext.authorizer?.claims?.verified_credentials[0].address
-}
-
 function getProvider(){
     // TODO: Secrets should come from env vars or aws secret manager
     return new ethers.InfuraProvider(
@@ -14,9 +10,14 @@ function getProvider(){
     )
 }
 
+async function getBalance(provider: ethers.InfuraProvider, walletAddress: string){
+    const balanceWei = await provider.getBalance(walletAddress);
+    return ethers.formatEther(balanceWei);
+}
+
 const apiKey= "dyn_t9PVDUcrb8rxXw84PCg8F2LaPoxsyUyqBym4QmrbN0qPXx3wHJ2uh8Sg"
 
 export {
-    getWallet,
-    getProvider
+    getProvider,
+    getBalance
 }
