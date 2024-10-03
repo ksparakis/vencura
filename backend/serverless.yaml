@@ -2,11 +2,6 @@ service: dynamic-demo-backend
 
 frameworkVersion: '3'
 
-provider:
-  name: aws
-  runtime: nodejs20.x
-  region: us-east-1
-
 package:
   individually: true
 
@@ -27,6 +22,43 @@ custom:
     noPrependStageInUrl: true
     noTimeout: true
     useChildProcesses: true
+
+layers:
+  NodeModules:
+    path: ./layer/nodejs
+    name: ${self:service}-${env:DOPPLER_ENVIRONMENT}-node-modules
+    compatibleRuntimes:
+      - nodejs20.x
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${env:DOPPLER_ENVIRONMENT, 'local'}
+  region: us-east-1
+  layers:
+    - {Ref: NodeModulesLambdaLayer}
+  memorySize: 1024
+  timeout: 30
+  environment:
+    COCKROACH_DB_NAME: ${env:COCKROACH_DB_NAME, ""}
+    COCKROACH_HOST: ${env:COCKROACH_HOST, ""}
+    COCKROACH_PASSWORD: ${env:COCKROACH_PASSWORD, ""}
+    COCKROACH_SSL_CERT: ${env:COCKROACH_SSL_CERT, ""}
+    COCKROACH_URL: ${env:COCKROACH_URL, ""}
+    COCKROACH_USER: ${env:COCKROACH_USER, ""}
+    COCKROACH_POOL_MAX: ${env:COCKROACH_POOL_MAX, 10} # Default value if not provided
+    COCKROACH_PORT: ${env:COCKROACH_PORT, 26257} # Default value if not provided
+    COCKROACH_ENABLE_LOGGING: ${env:COCKROACH_ENABLE_LOGGING, false} # Default to false
+    COCKROACH_ENABLE_SSL: ${env:COCKROACH_ENABLE_SSL, true} # Default to true
+    TRANSACTION_RETRY_COUNT: ${env:TRANSACTION_RETRY_COUNT, 3} # Default value if not provided
+    TRANSACTION_RETRY_TIMEOUT_MS: ${env:TRANSACTION_RETRY_TIMEOUT_MS, 1000} # Default value if not provided
+    ENVIRONMENT: ${env:ENVIRONMENT, "development"}
+    NODE_PATH: ${env:NODE_PATH, ""}
+    LOG_LEVEL: ${env:LOG_LEVEL, "debug"}
+    INFURA_PROJECT_ID: ${env:INFURA_PROJECT_ID, ""}
+    INFURA_SECRET: ${env:INFURA_PROJECT_SECRET, ""}
+    INFURA_NETWORK: ${env:INFURA_NETWORK, ""}
+
 
 functions:
   getBalance:
@@ -70,6 +102,15 @@ functions:
     events:
       - http:
           path: user
+          method: GET
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
+  getAllOtherUsers:
+    handler: src/handlers/getAllOtherUsers.handler
+    events:
+      - http:
+          path: user/others
           method: GET
           authorizer:
             name: dynamicAuthorizer

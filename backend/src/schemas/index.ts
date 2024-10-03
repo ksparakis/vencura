@@ -1,8 +1,8 @@
 import {z} from "zod";
 
-const createUserSchema = z.object({ password: z.string() })
+const CreateUserSchema = z.object({ password: z.string() })
 
 
-export {
-    createUserSchema
+export{
+    CreateUserSchema
 }

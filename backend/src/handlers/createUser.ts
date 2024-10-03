@@ -1,28 +1,38 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
-import {ethers} from 'ethers';
-import jsonBodyParser from '@middy/http-json-body-parser';
-import httpHeaderNormalizer from '@middy/http-header-normalizer';
-import httpSecurityHeaders from '@middy/http-security-headers';
-import {response} from '../utils/response';
-import {middleware} from "../utils/middleware";
-import {loggerMiddleware} from "../utils/logger";
-import httpErrorHandler from "@middy/http-error-handler";
+import { ethers } from 'ethers';
+import { response } from '../utils/response';
+import {createHandler} from '../middleware/middleware';
 import { generateMnemonic } from 'bip39';
-import {zodValidator} from "../utils/zodMiddleware";
-import {createUserSchema} from "../schemas";
+import { CreateUserSchema } from '../schemas';
+import {validateBody} from '../utils/zodValidators';
+import {getLogger} from '../middleware/logger';
+import {encrypt} from '../utils/crypto';
+import {getDb} from '../utils/dbUtils';
+import {createNewUser} from "../repo/userRepo";
 
-const createUser = async (req: APIGatewayProxyEvent, context: Context) => {
-    const { password }= req.body
+
+const createUser =   async (
+    event: APIGatewayProxyEvent,
+    context: Context
+): Promise<APIGatewayProxyResult> => {
+    const logger = getLogger();
+    const db = getDb();
+    // Cast to validated schema type
+    const { password } = validateBody(event, CreateUserSchema);
     const mnemonic = generateMnemonic()
+    const encryptedMnemonic = encrypt(mnemonic, password);
+    logger.debug({encryptedMnemonic});
     const wallet = ethers.Wallet.fromPhrase(mnemonic)
-    const signed = await wallet.signMessage("Hello World")
-    return response(200, {wallet, signed});
+    const newUser = await createNewUser(
+        event.requestContext.authorizer?.claims?.sub,
+        event.requestContext.authorizer?.claims?.email,
+        encryptedMnemonic,
+        wallet.address,
+        wallet.publicKey
+    );
+
+
+    return response(200, {newUser});
 }
 
-export const handler = middleware(createUser)
-    .use(httpErrorHandler())
-    .use(loggerMiddleware())
-    .use(httpSecurityHeaders())
-    .use(httpHeaderNormalizer())
-    .use(jsonBodyParser())
-    .use(zodValidator(createUserSchema));
+export const handler = createHandler(createUser);

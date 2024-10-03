@@ -1,27 +1,26 @@
-import middy from '@middy/core'
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
-import {ethers} from 'ethers';
-import jsonBodyParser from '@middy/http-json-body-parser';
-import httpHeaderNormalizer from '@middy/http-header-normalizer';
-import httpSecurityHeaders from '@middy/http-security-headers';
-import {getBalance, getProvider, getWallet} from '../utils/walletUtil';
-import {response} from '../utils/response';
-import {middleware} from "../utils/middleware";
-import {loggerMiddleware} from "../utils/logger";
-import httpErrorHandler from "@middy/http-error-handler";
-import {sequelizeMiddleware} from "../utils/sequelizeMiddleware";
-import wrapper from "../utils/wrapper";
+import { response } from '../utils/response';
+import { createHandler } from '../middleware/middleware';
+import { getLogger } from '../middleware/logger';
+import { getUsersWalletAddress } from "../repo/userRepo";
+import { getBalance, getProvider, getWallet } from "../repo/walletUtil";
 
-const getBalanceRequest = async (req: APIGatewayProxyEvent, context: Context) => {
-    const walletAddress = ''
-    if (!walletAddress) {
-        return response(400, { message: 'Wallet address not found in token' });
-    }
+
+const getBalanceRequest =   async (
+    event: APIGatewayProxyEvent,
+    context: Context
+): Promise<APIGatewayProxyResult> => {
+    const logger = getLogger();
+    // Cast to validated schema type
+
+    const address = await getUsersWalletAddress(
+        event.requestContext.authorizer?.claims?.sub,
+    );
 
     try {
         // Get the balance
         const provider = getProvider();
-        const balance = getBalance(provider, walletAddress);
+        const balance = await getBalance(provider, address);
 
         return response(200, { balance });
     } catch (err: any) {
@@ -29,5 +28,4 @@ const getBalanceRequest = async (req: APIGatewayProxyEvent, context: Context) =>
     }
 }
 
-export const handler = wrapper(middleware(getBalanceRequest)
-
+export const handler = createHandler(getBalanceRequest);
