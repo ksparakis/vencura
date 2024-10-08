@@ -41,6 +41,7 @@
     "nodemon": "^3.1.7",
     "pino-pretty": "^11.2.2",
     "serverless": "^3.39.0",
+    "serverless-better-credentials": "^2.0.0",
     "serverless-offline": "13.8.1",
     "serverless-offline-local-authorizers-plugin": "^1.2.0",
     "serverless-plugin-typescript": "^2.1.5",

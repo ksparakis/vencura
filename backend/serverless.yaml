@@ -9,7 +9,7 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-offline-local-authorizers-plugin
-  #- serverless-plugin-typescript
+  - serverless-better-credentials
 
 custom:
   webpack:
@@ -77,6 +77,15 @@ functions:
       - http:
           path: wallet/transaction
           method: POST
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
+  checkTransaction:
+    handler: src/handlers/checkTransaction.handler
+    events:
+      - http:
+          path: wallet/transaction/{transactionId}
+          method: GET
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization

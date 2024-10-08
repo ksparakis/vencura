@@ -1,0 +1,126 @@
+name: Backend Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 20
+  IMAGE: "node:${{ env.NODE_VERSION }}-alpine"
+
+jobs:
+  install_dependencies:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ env.IMAGE }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Doppler
+        run: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+          curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+          sudo apt-get update && sudo apt-get install doppler
+
+      - name: Install dependencies
+        run: |
+          rm -rf node_modules || true
+          rm -rf layer/nodejs/node_modules || true
+          mkdir -p layer/nodejs
+          npm i -g clean-modules
+          npm i -g node-prune
+          export NODE_ENV=production
+          npm ci
+          npm dedupe
+          clean-modules -y
+          node-prune
+          mv node_modules layer/nodejs
+          export NODE_ENV=development
+          npm ci
+          rm -rf .webpack_cache || true
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/
+            layer/nodejs/node_modules/
+            .webpack_cache/
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+
+  verify:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ env.IMAGE }}
+    needs: install_dependencies
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/
+            layer/nodejs/node_modules/
+            .webpack_cache/
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Install global tools
+        run: |
+          npm i -g rimraf npm-run-all
+
+      - name: Run tests
+        run: npm run verify
+
+  migrate:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ env.IMAGE }}
+    needs: verify
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/
+            layer/nodejs/node_modules/
+            .webpack_cache/
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Run migrations
+        run: npm run migrate:up:ci
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ env.IMAGE }}
+    needs: migrate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/
+            layer/nodejs/node_modules/
+            .webpack_cache/
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+
+      - name: Deploy
+        run: npm run deploy:ci

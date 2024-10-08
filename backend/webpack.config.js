@@ -41,6 +41,7 @@ module.exports = {
                 include: __dirname,
                 exclude: /node_modules/,
                 use: [
+                    // Errors
                     // 'thread-loader',
                     // {
                     //     loader: 'ts-loader',
