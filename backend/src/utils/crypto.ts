@@ -45,7 +45,7 @@ function decrypt(encryptedText: string, password: string) {
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
 
     // Decrypt the text using Buffer
-    let decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
+    const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
 
     // Return the decrypted text as a utf8 string
     return decrypted.toString('utf8');

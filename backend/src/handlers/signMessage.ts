@@ -1,38 +1,24 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
-import { ethers } from 'ethers';
 import { response } from '../utils/response';
 import {createHandler} from '../middleware/middleware';
-import { generateMnemonic } from 'bip39';
-import { CreateUserSchema } from '../schemas';
+import { signMessageSchema} from '../schemas';
 import {validateBody} from '../utils/zodValidators';
-import {getLogger, loggerMiddleware} from '../middleware/logger';
-import {encrypt} from '../utils/crypto';
-import {getDb} from '../utils/dbUtils';
-import {createNewUser} from "../repo/userRepo";
+import {getLogger} from '../middleware/logger';
+
+import {getWalletForUser} from "../utils/common";
 
 
-const createUser =   async (
+const signMessage =   async (
     event: APIGatewayProxyEvent,
     context: Context
 ): Promise<APIGatewayProxyResult> => {
     const logger = getLogger();
-    const db = getDb();
     // Cast to validated schema type
-    const { password } = validateBody(event, CreateUserSchema);
-    const mnemonic = generateMnemonic()
-    const encryptedMnemonic = encrypt(mnemonic, password);
-    logger.debug({encryptedMnemonic});
-    const wallet = ethers.Wallet.fromPhrase(mnemonic)
-    const newUser = await createNewUser(
-        event.requestContext.authorizer?.claims?.sub,
-        event.requestContext.authorizer?.claims?.email,
-        encryptedMnemonic,
-        wallet.address,
-        wallet.publicKey
-    );
+    const { password, message } = validateBody(event, signMessageSchema);
+    const wallet = await getWalletForUser(event.requestContext.authorizer?.claims?.sub, password);
+    const signedMessage = await wallet.signMessage(message);
 
-
-    return response(200, {newUser});
+    return response(200, {signedMessage});
 }
 
-export const handler = createHandler(createUser);
+export const handler = createHandler(signMessage);

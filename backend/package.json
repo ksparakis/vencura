@@ -1,7 +1,7 @@
 {
   "name": "dynamic-demo-backend",
   "version": "1.0.0",
-  "description": "A demo backend for the dynamic interview challange ",
+  "description": "A demo backend for the dynamic interview challenge ",
   "main": "index.js",
   "scripts": {
     "deploy": "doppler run --command \"npx sls deploy --aws-s3-accelerate\"",
@@ -12,7 +12,7 @@
     "test": "doppler run -- jest --passWithNoTests",
     "dev": "nodemon --exec npx sls offline start | pino-pretty",
     "dev:doppler": "doppler run -- nodemon --exec npx sls offline start | pino-pretty",
-    "migrate:new": "npx typeorm migration:create migrations/",
+    "migrate:new": "npx typeorm migration:create",
     "migrate:generate": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:create migrations/",
     "migrate:up": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:run",
     "migrate:down": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:revert"
@@ -29,8 +29,15 @@
   "author": "k@sparakis.com",
   "license": "ISC",
   "devDependencies": {
+    "@babel/preset-typescript": "^7.25.7",
+    "@eslint/js": "^9.12.0",
     "@types/aws-lambda": "^8.10.145",
+    "@types/eslint__js": "^8.42.3",
     "@types/pg": "^8.11.10",
+    "@types/uuid": "^10.0.0",
+    "babel-loader": "^9.2.1",
+    "eslint": "^9.12.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
     "nodemon": "^3.1.7",
     "pino-pretty": "^11.2.2",
     "serverless": "^3.39.0",
@@ -38,14 +45,18 @@
     "serverless-offline-local-authorizers-plugin": "^1.2.0",
     "serverless-plugin-typescript": "^2.1.5",
     "serverless-webpack": "^5.14.2",
+    "terser-webpack-plugin": "^5.3.10",
+    "thread-loader": "^4.0.4",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typeorm-cli": "^1.0.7",
     "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.1",
     "webpack": "^5.95.0",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.665.0",
     "@middy/core": "^4.7.0",
     "@middy/http-cors": "^4.7.0",
     "@middy/http-error-handler": "^4.7.0",
@@ -60,6 +71,7 @@
     "moize": "^6.1.6",
     "pg": "^8.13.0",
     "typeorm": "^0.3.20",
+    "uuid": "^10.0.0",
     "winston": "^3.14.2",
     "zod": "^3.23.8"
   }

@@ -9,9 +9,12 @@ type MiddyRequest = middy.Request<APIGatewayProxyEvent, APIGatewayProxyResult, E
 
 type HandlerFunction = (event: APIGatewayProxyEvent, context: Context) => Promise<APIGatewayProxyResult>;
 
+type CryptoTransactionStatus = 'enqueued' | 'failed' | 'succeeded';
+
 export {
     MiddlewareObj,
     MiddlewareFn,
     MiddyRequest,
     HandlerFunction,
+    CryptoTransactionStatus
 }

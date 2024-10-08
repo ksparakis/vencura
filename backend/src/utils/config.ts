@@ -22,7 +22,8 @@ const specs = z.object({
         .default('debug'),
     INFURA_NETWORK: z.string().default('sepolia'),
     INFURA_PROJECT_ID: z.string(),
-    INFURA_SECRET: z.string()
+    INFURA_SECRET: z.string(),
+    QUEUE_URL: z.string()
 });
 
 // Create a memoized function to get the config

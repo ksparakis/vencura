@@ -1,8 +1,7 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from "aws-lambda";
 import {response} from "../utils/response";
 import {createHandler} from "../middleware/middleware";
-import {getUserBySub} from "../repo/userRepo";
-import {User} from "../models/users";
+import {getUserBySub} from "../repos/userRepo";
 
 const getUser =   async (
     event: APIGatewayProxyEvent,

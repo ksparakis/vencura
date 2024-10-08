@@ -6,15 +6,15 @@ package:
   individually: true
 
 plugins:
-  #- serverless-webpack
+  - serverless-webpack
   - serverless-offline
   - serverless-offline-local-authorizers-plugin
-  - serverless-plugin-typescript
+  #- serverless-plugin-typescript
 
 custom:
-#  webpack:
-#    webpackConfig: ./webpack.config.js
-#    includeModules: false
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: false
 
   serverless-offline:
     httpPort: 3050
@@ -58,6 +58,7 @@ provider:
     INFURA_PROJECT_ID: ${env:INFURA_PROJECT_ID, ""}
     INFURA_SECRET: ${env:INFURA_PROJECT_SECRET, ""}
     INFURA_NETWORK: ${env:INFURA_NETWORK, ""}
+    QUEUE_URL: ${env:QUEUE_URL, ""}
 
 
 functions:
@@ -118,3 +119,23 @@ functions:
   dynamicAuthorizer:
     handler: src/handlers/dynamicAuthorizer.handler
 
+  # 1 message per lambda By default, AWS Lambda allows
+  # 1,000 concurrent executions per AWS account in a region,
+  # but this can be increased by requesting a limit increase.
+  processTransactionQueue:
+    handler: src/handlers/processTransactionQueue.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [sendTransactionQueue, Arn] # Reference the SQS queue created in resources
+          batchSize: 1
+
+
+resources:
+  Resources:
+    sendTransactionQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: sendTransactionQueue
+        VisibilityTimeout: 300 # Timeout in seconds
+        MessageRetentionPeriod: 600 # Retention period in seconds (10 min)

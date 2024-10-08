@@ -1,18 +1,13 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 import { response } from '../utils/response';
 import { createHandler } from '../middleware/middleware';
-import { getLogger } from '../middleware/logger';
-import { getUsersWalletAddress } from "../repo/userRepo";
-import { getBalance, getProvider, getWallet } from "../repo/walletUtil";
+import { getUsersWalletAddress } from "../repos/userRepo";
+import { getBalance, getProvider } from "../repos/walletUtil";
 
 
 const getBalanceRequest =   async (
     event: APIGatewayProxyEvent,
-    context: Context
 ): Promise<APIGatewayProxyResult> => {
-    const logger = getLogger();
-    // Cast to validated schema type
-
     const address = await getUsersWalletAddress(
         event.requestContext.authorizer?.claims?.sub,
     );

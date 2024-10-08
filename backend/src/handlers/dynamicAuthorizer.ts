@@ -63,7 +63,7 @@ export const handler = async (
         };
 
         const signingKey = await getSigningKey();
-        let issuer = 'app.dynamicauth.com/69b77dec-b184-44c0-8517-d8927eff1d32';
+        const issuer = 'app.dynamicauth.com/69b77dec-b184-44c0-8517-d8927eff1d32';
 
         const decoded = verify(tokenString, signingKey, {
             algorithms: ['RS256'],

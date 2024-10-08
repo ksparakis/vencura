@@ -1,6 +1,5 @@
-import middy, {MiddyfiedHandler} from '@middy/core';
-import {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda';
-import {HandlerFunction} from '../types/shared-types';
+import middy from '@middy/core';
+import {APIGatewayProxyEvent, Context} from 'aws-lambda';
 import {asyncLocalStorage} from './asyncLocalStorage';
 import httpHeaderNormalizer from "@middy/http-header-normalizer";
 import jsonBodyParser from "@middy/http-json-body-parser";

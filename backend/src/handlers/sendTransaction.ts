@@ -1,38 +1,20 @@
-import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
-import { ethers } from 'ethers';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 import { response } from '../utils/response';
-import {createHandler} from '../middleware/middleware';
-import { generateMnemonic } from 'bip39';
-import { CreateUserSchema } from '../schemas';
-import {validateBody} from '../utils/zodValidators';
-import {getLogger, loggerMiddleware} from '../middleware/logger';
-import {encrypt} from '../utils/crypto';
-import {getDb} from '../utils/dbUtils';
-import {createNewUser} from "../repo/userRepo";
+import { createHandler } from '../middleware/middleware';
+import { sendTransactionSchema } from '../schemas';
+import { validateBody } from '../utils/zodValidators';
+import { enqueueMessage } from "../repos/sqsRepo";
+import {newTransaction} from "../repos/cryptoTransactionsRepo";
 
 
-const createUser =   async (
+const sendTransaction =   async (
     event: APIGatewayProxyEvent,
-    context: Context
 ): Promise<APIGatewayProxyResult> => {
-    const logger = getLogger();
-    const db = getDb();
-    // Cast to validated schema type
-    const { password } = validateBody(event, CreateUserSchema);
-    const mnemonic = generateMnemonic()
-    const encryptedMnemonic = encrypt(mnemonic, password);
-    logger.debug({encryptedMnemonic});
-    const wallet = ethers.Wallet.fromPhrase(mnemonic)
-    const newUser = await createNewUser(
-        event.requestContext.authorizer?.claims?.sub,
-        event.requestContext.authorizer?.claims?.email,
-        encryptedMnemonic,
-        wallet.address,
-        wallet.publicKey
-    );
-
-
-    return response(200, {newUser});
+    const { password, amount, to } = validateBody(event, sendTransactionSchema);
+    const tx = await newTransaction(event.requestContext.authorizer?.claims?.sub, to, amount)
+    const msg = {...tx, password}
+    await enqueueMessage(msg)
+    return response(200, {transactionId: tx.id});
 }
 
-export const handler = createHandler(createUser);
+export const handler = createHandler(sendTransaction);
