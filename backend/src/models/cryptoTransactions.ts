@@ -7,7 +7,7 @@ export enum CryptoTransactionStatusEnum {
     SUCCEEDED = 'succeeded',
 }
 
-@Entity()
+@Entity('CryptoTransactions')
 export class CryptoTransactions extends BaseEntity {
 
     @PrimaryColumn()

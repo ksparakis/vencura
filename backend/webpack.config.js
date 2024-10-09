@@ -11,7 +11,7 @@ module.exports = {
     mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
     externals: [nodeExternals()],
     stats: 'errors-only',
-    devtool: 'source-map',
+    devtool: slsw.lib.webpack.isLocal ? 'inline-source-map' : 'source-map',
     cache: {
         type: 'filesystem', // Persistent cache stored on the file system
         cacheDirectory: resolve(__dirname, '.webpack_cache'), // Custom cache directory
@@ -41,19 +41,14 @@ module.exports = {
                 include: __dirname,
                 exclude: /node_modules/,
                 use: [
-                    // Errors
-                    // 'thread-loader',
-                    // {
-                    //     loader: 'ts-loader',
-                    //     options: {
-                    //         configFile: resolve(__dirname, 'tsconfig.json'), // Specify the path to your tsconfig.json
-                    //     },
-                    // },
                     {
                         loader: 'ts-loader',
                         options: {
                             configFile: resolve(__dirname, 'tsconfig.json'),
                             transpileOnly: true, // Optional: For performance, disables type-checking during Webpack build
+                            compilerOptions: {
+                                sourceMap: true, // Enable source maps in ts-loader
+                            }
                         },
                     },
                 ],

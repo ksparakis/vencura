@@ -2,14 +2,14 @@ import type {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda'
 import { response } from '../utils/response';
 import {createHandler} from '../middleware/middleware';
 import {checkTransactionSchema} from '../schemas';
-import {validateQuery} from '../utils/zodValidators';
+import {validatePath} from '../utils/zodValidators';
 import {checkTransactionCompleted} from "../repos/cryptoTransactionsRepo";
 
 
 const checkTransaction =   async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-    const { transactionId } = validateQuery(event, checkTransactionSchema);
+    const { transactionId } = validatePath(event, checkTransactionSchema);
     // Cast to validated schema type
     const status = await checkTransactionCompleted(transactionId)
 

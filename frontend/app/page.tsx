@@ -3,7 +3,7 @@
 
 import { DynamicWidget } from "@/lib/dynamic";
 import { useState, useEffect } from 'react';
-import DynamicMethods from "@/app/components/Methods";
+import DynamicMethods from "@/app/components/MainComponent";
 import './page.css';
 
 const checkIsDarkSchemePreferred = () => {
@@ -19,7 +19,7 @@ export default function Main() {
   useEffect(() => {
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => setIsDarkMode(checkIsDarkSchemePreferred());
-    
+
     darkModeMediaQuery.addEventListener('change', handleChange);
     return () => darkModeMediaQuery.removeEventListener('change', handleChange);
   }, []);
@@ -27,20 +27,19 @@ export default function Main() {
   return (
     <div className={`container ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
-        <img className="logo" src={isDarkMode ? "/logo-light.png" : "/logo-dark.png"} alt="dynamic" />
-        <div className="header-buttons">
-          <button className="docs-button" onClick={() => window.open('https://docs.dynamic.xyz', '_blank', 'noopener,noreferrer')}>Docs</button>
-          <button className="get-started" onClick={() => window.open('https://app.dynamic.xyz', '_blank', 'noopener,noreferrer')}>Get started</button>
+        <img className="logo" src={isDarkMode ? "/vencura-dark.png" : "/vencura-light.png"} alt="vencura" />
+          <DynamicWidget/>
+          <div className="header-buttons">
+          <button className="docs-button" onClick={() => window.open('https://github.com/ksparakis/vencura', '_blank', 'noopener,noreferrer')}>Github</button>
         </div>
       </div>
-      <div className="modal">
-        <DynamicWidget />
-        <DynamicMethods isDarkMode={isDarkMode} />
+        <div className="modal">
+
+            <DynamicMethods isDarkMode={isDarkMode}/>
+        </div>
+        <div className="footer">
+            <div className="footer-text">Made by Konstantino Sparakis️</div>
       </div>
-      <div className="footer">
-        <div className="footer-text">Made with ❤️ by dynamic</div>
-        <img className="footer-image" src={isDarkMode ? "/image-dark.png" : "/image-light.png"} alt="dynamic" />
-      </div>
-    </div> 
+    </div>
   );
 }

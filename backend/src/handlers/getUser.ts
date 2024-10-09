@@ -6,7 +6,7 @@ import {getUserBySub} from "../repos/userRepo";
 const getUser =   async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-    const sub = event.requestContext.authorizer?.claims?.sub;
+    const sub = event.requestContext.authorizer?.claims?.sub as string;
     const user= await getUserBySub(sub);
     return response(200, {user});
 }

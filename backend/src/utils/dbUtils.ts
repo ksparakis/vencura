@@ -2,6 +2,7 @@ import {asyncLocalStorage} from '../middleware/asyncLocalStorage';
 import {DataSourceOptions, DataSource} from "typeorm";
 import {getConfig} from "./config";
 import {User} from "../models/users";
+import {CryptoTransactions} from "../models/cryptoTransactions";
 
 function getDbConfig() :DataSourceOptions {
     const config = getConfig();
@@ -19,7 +20,7 @@ function getDbConfig() :DataSourceOptions {
         maxTransactionRetries: 5,
         poolSize: config.COCKROACH_POOL_MAX,
         timeTravelQueries: false,
-        entities: [User],
+        entities: [User, CryptoTransactions],
     }
 }
 

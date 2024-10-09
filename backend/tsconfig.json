@@ -9,7 +9,10 @@
     "outDir": "./build",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "sourceMap": true,        // Ensure this is set to true
+    "inlineSources": true,    // Optional: Embed sources into the source map for better debugging
+    "inlineSourceMap": false  // Ensure this is false to prevent embedding maps directly in the output file
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

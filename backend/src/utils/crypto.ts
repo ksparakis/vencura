@@ -1,15 +1,16 @@
 import crypto from "crypto";
+import createHttpError from "http-errors";
+import {getLogger} from "../middleware/logger";
 
-function encrypt(text: string, password: string) {
-    const IV_LENGTH = 16; // IV should be 16 bytes for AES
-    const KEY_LENGTH = 32; // Key length for AES-256 is 32 bytes
+const IV_LENGTH = 16; // IV should be 16 bytes for AES
 
+function encrypt(text: string, password: string, sub: string) {
+    const logger = getLogger();
+    logger.debug('Encrypting text');
     // Generate a random IV
     const iv = crypto.randomBytes(IV_LENGTH);
 
-    // Derive the key from the password
-    const key = crypto.createHash('sha256').update(password).digest(); // Hash the password to fit the key length
-
+    const key = deriveKey(password, sub);
     // Create cipher using AES-256-CBC
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 
@@ -21,8 +22,9 @@ function encrypt(text: string, password: string) {
     return iv.toString('hex') + ':' + encrypted;
 }
 
-function decrypt(encryptedText: string, password: string) {
-    const IV_LENGTH = 16; // IV should be 16 bytes for AES
+function decrypt(encryptedText: string, password: string, sub: string) {
+    const logger = getLogger();
+    logger.debug('Decrypting text', {encryptedText});
 
     // Split the encrypted text into the IV and the encrypted data
     const textParts = encryptedText.split(':');
@@ -35,20 +37,29 @@ function decrypt(encryptedText: string, password: string) {
         throw new Error('Invalid IV length');
     }
 
-    const encryptedData = Buffer.from(textParts[1], 'hex');
-
-    // Use a key derivation function for better security (PBKDF2 with salt)
-    const salt = 'somesecure_salt'; // Ideally, store and use a unique salt for each user
-    const key = crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256'); // Derive a key using PBKDF2
-
-    // Create decipher using AES-256-CBC
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
-
-    // Decrypt the text using Buffer
-    const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
 
     // Return the decrypted text as a utf8 string
-    return decrypted.toString('utf8');
+    try {
+        const encryptedData = Buffer.from(textParts[1], 'hex');
+
+        const key = deriveKey(password, sub);
+        // Create decipher using AES-256-CBC
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+
+        // Decrypt the text using Buffer
+        const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
+
+        return  decrypted.toString('utf8');
+    } catch (error: any) {
+
+        logger.error('Invalid password', {error});
+        throw new createHttpError.BadRequest('Invalid password');
+    }
+
+}
+
+function deriveKey(password: string, salt: string) {
+    return crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256');
 }
 
 export{

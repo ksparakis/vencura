@@ -14,9 +14,10 @@ const createUser =   async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     const logger = getLogger();
+    logger.debug( JSON.stringify(event.body));
     const { password } = validateBody(event, passwordSchema);
     const mnemonic = generateMnemonic()
-    const encryptedMnemonic = encrypt(mnemonic, password);
+    const encryptedMnemonic = encrypt(mnemonic, password, event.requestContext?.authorizer?.claims?.sub);
     logger.debug({encryptedMnemonic});
     const wallet = ethers.Wallet.fromPhrase(mnemonic)
     const newUser = await createNewUser(
@@ -28,7 +29,7 @@ const createUser =   async (
     );
 
 
-    return response(200, {newUser});
+    return response(200, {user: newUser});
 }
 
 export const handler = createHandler(createUser);

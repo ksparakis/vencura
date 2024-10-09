@@ -1,0 +1,45 @@
+/* WalletInfo.css */
+.wallet-info-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.wallet-info {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.wallet-info:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-address, .wallet-balance {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.wallet-address label, .wallet-balance label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+
+.wallet-address span, .wallet-balance span {
+    font-size: 14px;
+    color: #555;
+    word-break: break-all; /* Ensures long addresses break properly */
+}
+
+.wallet-balance {
+    border-bottom: none;
+    padding-top: 10px;
+}

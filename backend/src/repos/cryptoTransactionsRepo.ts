@@ -26,11 +26,14 @@ async function checkTransactionCompleted(id: string): Promise<boolean> {
     {
         throw new createHttpError.NotFound('Transaction not found');
     }
-    if(tx.status === 'succeeded' || tx.status === 'failed')
-    {
-        return true;
-    } else {
-        return false;
+
+    switch (tx.status) {
+        case 'succeeded':
+            return true
+        case 'failed':
+            return true;
+        default:
+            return false;
     }
 }
 

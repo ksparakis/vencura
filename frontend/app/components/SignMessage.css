@@ -1,0 +1,84 @@
+/* SignMessage.css */
+.sign-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sign-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.message-label {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.message-input {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    margin-top: 20px;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.signed-message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signed-message {
+    background-color: #f4f5f7;
+    padding: 10px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}

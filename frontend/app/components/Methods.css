@@ -6,13 +6,13 @@
     flex-direction: column;
     align-items: center;
   }
-  
+
   .methods-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .btn {
     padding: 10px 15px;
     margin: 5px;
@@ -22,12 +22,12 @@
     font-weight: bold;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-  
+
   .btn-primary {
     background-color: #4779fe;
     color: white;
   }
-  
+
   .results-container {
     justify-content: center;
     width: 100%;
@@ -38,31 +38,89 @@
     word-wrap: break-word;
     overflow-x: auto;
   }
-  
+
   .results-text {
     white-space: pre-wrap;
     word-break: break-word;
     max-width: 100%;
   }
-  
+
   .clear-container {
     display: flex;
     justify-content: center;
     margin-top: 10px;
   }
-  
+
   .dynamic-methods[data-theme='light'] {
     background-color: #f0f0f0;
     color: #333;
   }
-  
+
   .dynamic-methods[data-theme='dark'] {
     background-color: #333;
     color: #f0f0f0;
   }
-  
+
   /* Hover effects */
   .btn:hover {
     opacity: 0.8;
   }
-  
+
+.password-prompt-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f5f7; /* Light background for a clean look */
+}
+
+.password-prompt-container form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px; /* Width limit for the form */
+  background-color: white;
+  padding: 40px;
+  padding-top:50px;
+  border-radius: 10px; /* Rounded corners for the form */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.password-prompt-container label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.password-prompt-container input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 25px; /* Rounded input */
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  transition: all 0.3s ease; /* Smooth interaction */
+  outline: none;
+  margin-bottom: 20px; /* Space between input and button */
+}
+
+.password-prompt-container input[type="password"]:focus {
+  border-color: #007bff; /* Blue border on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Glow effect */
+}
+
+.password-prompt-container button[type="submit"] {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #007bff;
+  color: white;
+  width: 100px;
+  border-radius: 25px; /* Rounded button */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.password-prompt-container button[type="submit"]:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
