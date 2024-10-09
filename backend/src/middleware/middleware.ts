@@ -11,7 +11,6 @@ import httpCors, {Options as CorsOptions} from "@middy/http-cors";
 
 const corsOptions: CorsOptions= {
     origins: ['http://localhost:3050', 'https://vencura.sparakis.com'],
-    credentials: true,
     requestMethods: 'GET,POST,PUT,DELETE,OPTIONS',
     requestHeaders: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id',
 }
