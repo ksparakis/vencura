@@ -1,6 +1,7 @@
 import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, Context, Callback } from 'aws-lambda';
 import{ JwtHeader, verify, decode  } from 'jsonwebtoken';
-import { JwksClient } from 'jwks-rsa'; // For fetching signing keys if using JWKS endpoint
+import { JwksClient } from 'jwks-rsa';
+import {getLogger, initLogger} from "../middleware/logger"; // For fetching signing keys if using JWKS endpoint
 
 // Define the expected token payload structure
 interface TokenPayload {
@@ -21,9 +22,11 @@ export const handler = async (
     context: Context,
     callback: Callback<APIGatewayAuthorizerResult>,
 ) => {
-
+    initLogger();
+   const logger =  getLogger();
     const token = event.authorizationToken;
     if (!token) {
+        logger.debug('Unauthorized: No token provided', { event });
         callback('Unauthorized');
         return;
     }
@@ -35,6 +38,7 @@ export const handler = async (
         // Decode token header to get the key ID (kid)
         const decodedHeader = decode(tokenString, { complete: true }) as { header: JwtHeader };
         if (!decodedHeader || !decodedHeader.header) {
+            logger.debug('Unauthorized Decoding kid failed', { event });
             callback('Unauthorized');
             return;
         }
@@ -53,6 +57,7 @@ export const handler = async (
                             const signingKey = key.getPublicKey();
                             resolve(signingKey);
                         }  else{
+                            logger.debug('Unauthorized Signing key failed', { event });
                             callback('Unauthorized');
                             return
                         }
@@ -78,7 +83,7 @@ export const handler = async (
 
         callback(null, policy);
     } catch (error) {
-        console.error('Authorization error:', error);
+        logger.error('Authorization error:', error);
         callback('Unauthorized');
         return
     }
@@ -99,7 +104,7 @@ const generatePolicy = (
                 {
                     Action: 'execute-api:Invoke',
                     Effect: effect,
-                    Resource: resource,
+                    Resource: '*',
                 },
             ],
         },

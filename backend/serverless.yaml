@@ -39,6 +39,12 @@ provider:
     - {Ref: NodeModulesLambdaLayer}
   memorySize: 1024
   timeout: 30
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action: "*"
+          Resource: "*"
   environment:
     COCKROACH_DB_NAME: ${env:COCKROACH_DB_NAME, ""}
     COCKROACH_HOST: ${env:COCKROACH_HOST, ""}
@@ -71,7 +77,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   sendTransaction:
     handler: src/handlers/sendTransaction.handler
     events:
@@ -81,7 +87,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   checkTransaction:
     handler: src/handlers/checkTransaction.handler
     events:
@@ -91,7 +97,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   signMessage:
     handler: src/handlers/signMessage.handler
     events:
@@ -101,7 +107,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   createUser:
     handler: src/handlers/createUser.handler
     events:
@@ -111,7 +117,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   getUser:
     handler: src/handlers/getUser.handler
     events:
@@ -121,7 +127,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   getAllOtherUsers:
     handler: src/handlers/getAllOtherUsers.handler
     events:
@@ -131,7 +137,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
-          cors: false
+          cors: true
   dynamicAuthorizer:
     handler: src/handlers/dynamicAuthorizer.handler
 

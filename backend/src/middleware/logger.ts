@@ -14,7 +14,7 @@ declare module 'aws-lambda' {
 let logger: Logger | null = null;
 
 // Function to initialize the logger
-const initLogger = () => {
+export const initLogger = () => {
     logger = createLogger({
         level: config.LOG_LEVEL || 'info',
         format: format.combine(
