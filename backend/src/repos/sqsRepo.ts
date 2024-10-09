@@ -22,7 +22,7 @@ async function enqueueMessage(payload: any):Promise <SendMessageCommandOutput> {
         return await client.send(command);
     } catch (error) {
         // error handling.
-
+        logger.error({error});
         throw new createHttpError.InternalServerError('Error sending message to SQS');
     }
 };

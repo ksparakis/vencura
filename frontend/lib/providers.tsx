@@ -10,13 +10,16 @@ export default function Providers({
   children: React.ReactNode;
 }) {
 
+    const environmentId = process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID;
+    if(!environmentId) {
+        throw new Error('Environment ID not found, please set NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID env var');
+    }
 
-
-  return (
+    return (
     <DynamicContextProvider
       theme="auto"
       settings={{
-        environmentId: "69b77dec-b184-44c0-8517-d8927eff1d32",
+        environmentId: environmentId,
            walletConnectors: [EthereumWalletConnectors],
       }}
     >

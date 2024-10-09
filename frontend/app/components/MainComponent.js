@@ -1,13 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useDynamicContext, useIsLoggedIn, useUserWallets } from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext, useIsLoggedIn } from "@dynamic-labs/sdk-react-core";
 import './Methods.css';
 import { getOrCreateUser } from '../repo/vencuraBackendRepo';
 import PasswordPrompt from './PasswordPrompt';
 import WalletInfo from '@/app/components/WalletInfoComponent';
 import SignMessage from '@/app/components/SignMessage';
 import SendCryptoComponent from '@/app/components/SendCryptoComponent';
-export default function MainComponent({ isDarkMode }) {
+export default function MainComponent() {
     const isLoggedIn = useIsLoggedIn();
     const { sdkHasLoaded } = useDynamicContext();
     const [isLoading, setIsLoading] = useState(true);

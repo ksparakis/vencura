@@ -7,13 +7,12 @@ import {getProvider} from "../repos/walletUtil";
 
 const processTransactionQueue =   async (
     event: APIGatewayProxyEvent,
-    context: Context
 ): Promise<APIGatewayProxyResult> => {
     const logger = getLogger();
-    logger.debug('sendTransaction handler called', {event});
+    logger.debug('sendTransaction handler called', {event: JSON.stringify(event)});
     // Cast to validated schema type
    // const { password, amount, toAddress } = validateBody(event, passwordSchema);
-    const provider = getProvider();
+    //const provider = getProvider();
 
     // const tx = {
     //     to: '0xRecipientAddressHere',

@@ -35,7 +35,7 @@ export default function Main() {
       </div>
         <div className="modal">
 
-            <DynamicMethods isDarkMode={isDarkMode}/>
+            <DynamicMethods />
         </div>
         <div className="footer">
             <div className="footer-text">Made by Konstantino Sparakis️</div>

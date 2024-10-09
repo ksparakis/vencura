@@ -6,9 +6,9 @@ import {getOtherUsers, sendTransaction} from '@/app/repo/vencuraBackendRepo'; //
 const checkTransactionStatus = async (transactionId) => {
     // Mock API call to check the transaction status
     return new Promise((resolve) => {
-        setTimeout(() => {
+        setTimeout(async () => {
             // Simulating transaction resolution after a few polls
-            resolve(Math.random() > 0.5 ? 'success' : 'failure');
+            resolve(await checkTransactionStatus(transactionId))
         }, 1000); // Simulate network delay
     });
 };
