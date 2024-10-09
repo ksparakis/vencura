@@ -71,6 +71,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   sendTransaction:
     handler: src/handlers/sendTransaction.handler
     events:
@@ -80,6 +81,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   checkTransaction:
     handler: src/handlers/checkTransaction.handler
     events:
@@ -89,6 +91,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   signMessage:
     handler: src/handlers/signMessage.handler
     events:
@@ -98,6 +101,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   createUser:
     handler: src/handlers/createUser.handler
     events:
@@ -107,6 +111,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   getUser:
     handler: src/handlers/getUser.handler
     events:
@@ -116,6 +121,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   getAllOtherUsers:
     handler: src/handlers/getAllOtherUsers.handler
     events:
@@ -125,6 +131,7 @@ functions:
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
+          cors: false
   dynamicAuthorizer:
     handler: src/handlers/dynamicAuthorizer.handler
 
@@ -148,3 +155,12 @@ resources:
         QueueName: sendTransactionQueue
         VisibilityTimeout: 300 # Timeout in seconds
         MessageRetentionPeriod: 600 # Retention period in seconds (10 min)
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'

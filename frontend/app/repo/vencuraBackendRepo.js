@@ -58,7 +58,7 @@ async function getOrCreateUser(password = '1234567') {
 }
 
 async function getOtherUsers() {
-    const res = await makeAPIRequest('GET', `${API_BASE_URL}/user/others`);
+    const res = await makeAPIRequest('GET', `/user/others`);
     return res.json();
 }
 
