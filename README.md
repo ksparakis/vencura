@@ -41,6 +41,7 @@ Konstantinos Sparakis
    ```
 4. Run Backend locally: open a terminal, navigate to the backend folder, and run:
    ```bash
+   open serverless.yaml and comment out the -serverless-better-credentials-plugin
    npm i
    npm run dev
    ```
