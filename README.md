@@ -31,7 +31,7 @@ Cheers,
 
 Konstantinos Sparakis
 
-## How to Run
+## How to Run Locally
 
 1. Clone git repo locally
 2. Get a copy of the `.env` file from @Ksparaks, or fill out your own variables into the backend `.env`
@@ -39,7 +39,7 @@ Konstantinos Sparakis
    ```bash
    npm run migrate:up
    ```
-4. Run Backend locally: open a terminal, navigate to the backend folder, and run:
+4. Run Backend locally: open a terminal, navigate to the backend folder, and do the following:
    ```bash
    open serverless.yaml and comment out the -serverless-better-credentials-plugin
    npm i
