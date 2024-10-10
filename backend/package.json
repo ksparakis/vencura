@@ -15,7 +15,8 @@
     "migrate:new": "npx typeorm migration:create",
     "migrate:generate": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:create migrations/",
     "migrate:up": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:run",
-    "migrate:down": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:revert"
+    "migrate:down": "doppler run -- npx ts-node ./node_modules/typeorm/cli -d ./orm.config.ts migration:revert",
+    "test:queue": "doppler run -- npx serverless invoke local --function processTransactionQueue --path ./eventTest.json"
   },
   "scripts-info": {
     "print": "prints out the serverless yaml as it is generated, used for debugging",

@@ -1,5 +1,5 @@
 import createError from 'http-errors';
-import {APIGatewayProxyEvent} from "aws-lambda";
+import {APIGatewayProxyEvent, type SQSEvent} from "aws-lambda";
 import {ZodType} from "zod";
 
 function validateBody<TBody>(event: APIGatewayProxyEvent, bodySchema: ZodType<TBody>): TBody {
@@ -26,6 +26,15 @@ function validateQuery<TQuery>(event: APIGatewayProxyEvent, querySchema: ZodType
     }
 }
 
+function validateSQSBody<TBody>(event: SQSEvent, eventSchema: ZodType<TBody>): TBody {
+    const body = JSON.parse(event.Records[0].body);
+    try{
+        return eventSchema.parse(body);
+    } catch (error: any) {
+        throw new createError.BadRequest(`Invalid Event Body: ${error.message}`);
+    }
+}
+
 function validatePath<TPath>(event: APIGatewayProxyEvent, pathSchema: ZodType<TPath>): TPath {
     if (!event.pathParameters) {
         throw new createError.BadRequest("Path parameters are required but were not provided.");
@@ -41,5 +50,6 @@ function validatePath<TPath>(event: APIGatewayProxyEvent, pathSchema: ZodType<TP
 export {
     validateBody,
     validateQuery,
-    validatePath
+    validatePath,
+    validateSQSBody
 }

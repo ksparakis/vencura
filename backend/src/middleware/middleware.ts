@@ -31,3 +31,16 @@ export function createHandler(handlerFunction: any) {
         });
     };
 }
+
+export function createSQSHandler(handlerFunction: any) {
+    const middyHandler = middy(handlerFunction)
+        .use(httpErrorHandlerMiddleware())
+        .use(loggerMiddleware())
+        .use(dbMiddleware());
+
+    return async (event: APIGatewayProxyEvent, context: Context) => {
+        return asyncLocalStorage.run(new Map(), async () => {
+            return await middyHandler(event, context);
+        });
+    };
+}

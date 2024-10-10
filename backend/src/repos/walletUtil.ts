@@ -20,7 +20,8 @@ async function getBalance(provider: ethers.InfuraProvider, walletAddress: string
 
 function getWallet(mnemonic: string): HDNodeWallet {
     const logger = getLogger();
-    const wallet = ethers.Wallet.fromPhrase(mnemonic)
+    const provider = getProvider();
+    const wallet = ethers.Wallet.fromPhrase(mnemonic, provider)
     if (!wallet.address) {
         logger.error('No wallet address found', {wallet});
         throw new Error('No wallet address found');

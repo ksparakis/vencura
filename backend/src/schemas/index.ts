@@ -20,9 +20,26 @@ const checkTransactionSchema = z.object({
     transactionId: z.string()
 });
 
+// Define the schema for the payload
+const payloadSchema = z.object({
+    id: z.string(),
+    sub: z.string(),
+    to: z.string(),
+    amount: z.string(),
+    status: z.enum(['enqueued', 'processing', 'completed', 'failed']), // Expected statuses
+    password: z.string().min(6, 'Password must be at least 6 characters long') // Validate password length
+});
+
+// Define the schema for the body
+const processTransactionSchema = z.object({
+    key: z.literal('sendTransaction'), // Simple validation for key presence
+    payload: payloadSchema
+});
+
 export{
     passwordSchema,
     signMessageSchema,
     sendTransactionSchema,
-    checkTransactionSchema
+    checkTransactionSchema,
+    processTransactionSchema
 }

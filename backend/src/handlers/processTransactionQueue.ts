@@ -1,28 +1,45 @@
-import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
+import type {APIGatewayEvent, APIGatewayProxyResult, SQSEvent} from 'aws-lambda'
 import { response } from '../utils/response';
-import {createHandler} from '../middleware/middleware';
+import {createHandler, createSQSHandler} from '../middleware/middleware';
 import { getLogger } from '../middleware/logger';
+import {validateSQSBody} from "../utils/zodValidators";
+import {processTransactionSchema} from "../schemas";
 import {getProvider} from "../repos/walletUtil";
+import { parseEther } from "ethers";
+import {getWalletForUser} from "../utils/common";
+import {updateTransactionStatus} from "../repos/cryptoTransactionsRepo";
 
 
 const processTransactionQueue =   async (
-    event: APIGatewayProxyEvent,
+    event: SQSEvent,
 ): Promise<APIGatewayProxyResult> => {
     const logger = getLogger();
+    const { id, sub, to, amount, password} = validateSQSBody(event, processTransactionSchema).payload;
     logger.debug('sendTransaction handler called', {event: JSON.stringify(event)});
-    // Cast to validated schema type
-   // const { password, amount, toAddress } = validateBody(event, passwordSchema);
-    //const provider = getProvider();
+    const wallet = await getWalletForUser(sub, password);
 
-    // const tx = {
-    //     to: '0xRecipientAddressHere',
-    //     value: parseEther('0.1'), // Amount to send (in ETH)
-    //     gasLimit: ethers.utils.hexlify(21000), // Set gas limit
-    //     gasPrice: await provider.getGasPrice(), // Gas price from network
-    //     nonce: await wallet.getTransactionCount('latest') // Fetch nonce
-    // };
-    // await enqueueMessage(tx)
+    const tx = {
+        to, // The recipient address, passed in the body
+        value: parseEther(amount), // Convert the amount to wei (ether)
+    };
+
+
+    // Step 4: Send the transaction
+    const transactionResponse = await wallet.sendTransaction(tx);
+    logger.info('Transaction sent:', transactionResponse.hash);
+
+    // Step 5: Wait for the transaction to be mined
+    const receipt = await transactionResponse.wait();
+    logger.info('Transaction mined:', receipt);
+
+    if(!receipt || receipt.status === 0) {
+        await updateTransactionStatus(id, 'failed');
+    } else {
+        await updateTransactionStatus(id, 'succeeded');
+    }
+
     return response(200, {});
 }
 
-export const handler = createHandler(processTransactionQueue);
+
+export const handler = createSQSHandler(processTransactionQueue);

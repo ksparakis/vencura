@@ -37,9 +37,9 @@ async function checkTransactionCompleted(id: string): Promise<boolean> {
     }
 }
 
-async function updateTransactionStatus(status: CryptoTransactionStatus): Promise<UpdateResult>{
+async function updateTransactionStatus(transactionId: string, status: CryptoTransactionStatus): Promise<UpdateResult>{
     const db = getDb();
-    return await db.getRepository(CryptoTransactions).update({id: '1234'}, {status});
+    return await db.getRepository(CryptoTransactions).update({id: transactionId}, {status});
 }
 
 
