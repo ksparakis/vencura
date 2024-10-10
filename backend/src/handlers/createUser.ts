@@ -8,21 +8,23 @@ import {validateBody} from '../utils/zodValidators';
 import {getLogger} from '../middleware/logger';
 import {encrypt} from '../utils/crypto';
 import {createNewUser} from "../repos/userRepo";
+import {getClaims} from "../utils/common";
 
 
 const createUser =   async (
     event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
     const logger = getLogger();
+    const { sub, email} = getClaims(event)
     logger.debug( JSON.stringify(event.body));
     const { password } = validateBody(event, passwordSchema);
     const mnemonic = generateMnemonic()
-    const encryptedMnemonic = encrypt(mnemonic, password, event.requestContext?.authorizer?.claims?.sub);
+    const encryptedMnemonic = encrypt(mnemonic, password, sub);
     logger.debug({encryptedMnemonic});
     const wallet = ethers.Wallet.fromPhrase(mnemonic)
     const newUser = await createNewUser(
-        event.requestContext?.authorizer?.claims?.sub as string,
-        event.requestContext.authorizer?.claims?.email,
+        sub,
+        email,
         encryptedMnemonic,
         wallet.address,
         wallet.publicKey

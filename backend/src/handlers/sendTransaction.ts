@@ -6,15 +6,15 @@ import { validateBody } from '../utils/zodValidators';
 import { enqueueMessage } from "../repos/sqsRepo";
 import {newTransaction} from "../repos/cryptoTransactionsRepo";
 import {getLogger} from "../middleware/logger";
+import {getClaims} from "../utils/common";
 
 
 const sendTransaction =   async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-    const logger = getLogger()
-    logger.debug(JSON.stringify(event.body));
+    const { sub } = getClaims(event)
     const { password, amount, to } = validateBody(event, sendTransactionSchema);
-    const tx = await newTransaction(event.requestContext.authorizer?.claims?.sub, to, amount)
+    const tx = await newTransaction(sub, to, amount)
     const msg = {...tx, password}
     await enqueueMessage(msg)
     return response(200, {transactionId: tx.id});

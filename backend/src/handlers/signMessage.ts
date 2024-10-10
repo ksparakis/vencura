@@ -5,17 +5,16 @@ import { signMessageSchema} from '../schemas';
 import {validateBody} from '../utils/zodValidators';
 import {getLogger} from '../middleware/logger';
 
-import {getWalletForUser} from "../utils/common";
+import {getClaims, getWalletForUser} from "../utils/common";
 
 
 const signMessage =   async (
     event: APIGatewayProxyEvent,
-    context: Context
 ): Promise<APIGatewayProxyResult> => {
-    const logger = getLogger();
     // Cast to validated schema type
+    const { sub } = getClaims(event);
     const { password, message } = validateBody(event, signMessageSchema);
-    const wallet = await getWalletForUser(event.requestContext.authorizer?.claims?.sub, password);
+    const wallet = await getWalletForUser(sub, password);
     const signedMessage = await wallet.signMessage(message);
 
     return response(200, {signedMessage});

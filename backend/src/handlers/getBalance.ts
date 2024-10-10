@@ -3,14 +3,14 @@ import { response } from '../utils/response';
 import { createHandler } from '../middleware/middleware';
 import { getUsersWalletAddress } from "../repos/userRepo";
 import { getBalance, getProvider } from "../repos/walletUtil";
+import {getClaims} from "../utils/common";
 
 
 const getBalanceRequest =   async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-    const address = await getUsersWalletAddress(
-        event.requestContext.authorizer?.claims?.sub,
-    );
+    const { sub } = getClaims(event)
+    const address = await getUsersWalletAddress(sub);
 
     try {
         // Get the balance

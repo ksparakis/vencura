@@ -9,7 +9,7 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-offline-local-authorizers-plugin
-  - serverless-better-credentials
+  - serverless-better-credentials # Comment to run locally if you dont want to authenticate
 
 custom:
   webpack:
@@ -65,6 +65,7 @@ provider:
     INFURA_SECRET: ${env:INFURA_PROJECT_SECRET, ""}
     INFURA_NETWORK: ${env:INFURA_NETWORK, ""}
     QUEUE_URL: ${env:QUEUE_URL, ""}
+    DYNAMIC_ID: ${env:DYNAMIC_ID, ""}
 
 
 functions:

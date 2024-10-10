@@ -1,21 +1,24 @@
 import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, Context, Callback } from 'aws-lambda';
 import{ JwtHeader, verify, decode  } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
-import {getLogger, initLogger} from "../middleware/logger"; // For fetching signing keys if using JWKS endpoint
+import {getLogger, initLogger} from "../middleware/logger";
+import {getConfig} from "../utils/config";
+import {TokenPayload} from "../types/shared-types"; // For fetching signing keys if using JWKS endpoint
 
 // Define the expected token payload structure
-interface TokenPayload {
-    sub: string;
-    iss: string;
-    exp: number;
-    walletAddress?: string;
-    [key: string]: any;
-}
 
-const DYNAMIC_ID = "69b77dec-b184-44c0-8517-d8927eff1d32";
+const config = getConfig();
+
 const client = new JwksClient({
-    jwksUri: `https://app.dynamic.xyz/api/v0/sdk/${DYNAMIC_ID}/.well-known/jwks`, // Replace with the actual JWKS URI
+    jwksUri: `https://app.dynamic.xyz/api/v0/sdk/${config.DYNAMIC_ID}/.well-known/jwks`, // Replace with the actual JWKS URI
 });
+
+// Helper function to send Unauthorized response with logging
+const unauthorizedResponse = (message: string, event: APIGatewayTokenAuthorizerEvent, callback: Callback): void => {
+    const logger = getLogger();
+    logger.debug(`Unauthorized: ${message}`, { event });
+    callback('Unauthorized');
+};
 
 export const handler = async (
     event: APIGatewayTokenAuthorizerEvent,
@@ -23,11 +26,11 @@ export const handler = async (
     callback: Callback<APIGatewayAuthorizerResult>,
 ) => {
     initLogger();
-   const logger =  getLogger();
+    const logger = getLogger();
     const token = event.authorizationToken;
+
     if (!token) {
-        logger.debug('Unauthorized: No token provided', { event });
-        callback('Unauthorized');
+        unauthorizedResponse('No token provided', event, callback);
         return;
     }
 
@@ -38,8 +41,7 @@ export const handler = async (
         // Decode token header to get the key ID (kid)
         const decodedHeader = decode(tokenString, { complete: true }) as { header: JwtHeader };
         if (!decodedHeader || !decodedHeader.header) {
-            logger.debug('Unauthorized Decoding kid failed', { event });
-            callback('Unauthorized');
+            unauthorizedResponse('Failed to decode JWT header', event, callback);
             return;
         }
 
@@ -51,17 +53,11 @@ export const handler = async (
                 client.getSigningKey(kid, (err, key) => {
                     if (err) {
                         reject(err);
+                    } else if (key) {
+                        resolve(key.getPublicKey());
                     } else {
-                        if(key)
-                        {
-                            const signingKey = key.getPublicKey();
-                            resolve(signingKey);
-                        }  else{
-                            logger.debug('Unauthorized Signing key failed', { event });
-                            callback('Unauthorized');
-                            return
-                        }
-
+                        unauthorizedResponse('No signing key found', event, callback);
+                        return;
                     }
                 });
             });
@@ -70,22 +66,32 @@ export const handler = async (
         const signingKey = await getSigningKey();
         const issuer = 'app.dynamicauth.com/69b77dec-b184-44c0-8517-d8927eff1d32';
 
+        // Verify the token
         const decoded = verify(tokenString, signingKey, {
             algorithms: ['RS256'],
             issuer
         }) as TokenPayload;
 
-        // TODO: For more security additional checks on the decoded token
-        // e.g., check expiration, audience, etc.
+        // Additional checks on the decoded token
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (decoded.exp < currentTime) {
+            unauthorizedResponse('Token has expired', event, callback);
+            return;
+        }
+
+        if (decoded.iss !== issuer) {
+            unauthorizedResponse('Token issuer mismatch', event, callback);
+            return;
+        }
 
         // Build IAM Policy
-        const policy = generatePolicy('user', 'Allow', event.methodArn, decoded);
+        const policy = generatePolicy(decoded.sub, 'Allow', '*', decoded);
 
         callback(null, policy);
     } catch (error) {
         logger.error('Authorization error:', error);
         callback('Unauthorized');
-        return
+        return;
     }
 };
 
@@ -104,9 +110,12 @@ const generatePolicy = (
                 {
                     Action: 'execute-api:Invoke',
                     Effect: effect,
-                    Resource: '*',
+                    Resource: resource, // Be more specific than '*' when possible
                 },
             ],
         },
+        context: {
+            claims: JSON.stringify(decodedToken)
+        }
     };
 };
