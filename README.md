@@ -60,6 +60,8 @@ Konstantinos Sparakis
 - Ensure there is no logging of passwords
 - Get Zod body/path/query validation built into the middleware chain.
 - Add better check for wrong password input
+- Update IAM role to be of least privelage
+- Update cors origin to restrict cors.
 
 #### Frontend
 - Clean up Code Organization
