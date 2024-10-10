@@ -5,7 +5,7 @@ I built a crypto Venmo-like app as part of a backend challange with the followin
 
 - Users can log in with various social accounts or a wallet.
 - On account creation, an embedded wallet is encrypted with a user-defined password and stored securely.
-- Users can send money, check their balance, or export the wallet's mnemonics.
+- Users can send money, sign a message, & check their balance.
 
 
 The app uses an AWS Serverless TypeScript backend and a Next.js frontend deployed on Vercel. My focus was to build a functional, production-ready product within a few days, showcasing:
@@ -31,6 +31,25 @@ Konstantinos Sparakis
 -----
 
 
+## TODO's & Proggress
+10/10/24 - The app is now fully functional and I am turning my attention to testing, cleaning & organizing the code as well as getting CI/CD Pipelines
+
+### Things on my list to improve
+ #### Backend
+- Get backend deployed automatically with github action
+- Add Jest tests and coverage of Backend
+- Ensure Backend Typescript passes Eslint
+- Encrypt SQS message since it contains a password
+- Ensure there is no logging of passwords
+- Get Zod body/path/query validation built into the middleware chain.
+- Add better check for wrong password input
+
+#### Frontend
+- Clean up Code Organization
+- Need loaders while frontend is calling backend
+- Buttons need to be debounced on api actions
+- Ensure password clears out on logout
+- Rework UI
 
 ## Backend Excersize Original Prompt
 
