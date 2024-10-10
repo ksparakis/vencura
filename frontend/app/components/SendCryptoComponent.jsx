@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './SendCryptoComponent.css';
-import {getOtherUsers, sendTransaction} from '@/app/repo/vencuraBackendRepo'; // Optional CSS file for styling
+import {checkTransaction, getOtherUsers, sendTransaction} from '@/app/repo/vencuraBackendRepo'; // Optional CSS file for styling
 
 
-const checkTransactionStatus = async (transactionId) => {
-    // Mock API call to check the transaction status
-    return new Promise((resolve) => {
-        setTimeout(async () => {
-            // Simulating transaction resolution after a few polls
-            resolve(await checkTransactionStatus(transactionId))
-        }, 1000); // Simulate network delay
-    });
-};
 
-export default function SendCryptoComponent({ balance, password }) {
+export default function SendCryptoComponent({ balance, password, refreshBalance }) {
     const [amount, setAmount] = useState('');
     const [selectedRecipient, setSelectedRecipient] = useState('');
     const [transactionId, setTransactionId] = useState(null);
@@ -27,6 +18,8 @@ export default function SendCryptoComponent({ balance, password }) {
             setRecipients(users.items);
         });
     }, [])
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (amount > balance) {
@@ -48,10 +41,11 @@ export default function SendCryptoComponent({ balance, password }) {
 
             // Poll for the transaction status every 10 seconds
             const intervalId = setInterval(async () => {
-                const status = await checkTransactionStatus(response.transactionId);
-                if (status) {
+                const status = await checkTransaction(transactionId);
+                if (status === 'failed' || status === 'succeeded') {
                     setStatus(status);
                     setIsLoading(false);
+                    refreshBalance();
                     clearInterval(intervalId); // Stop polling once resolved
                 }
             }, 10000);
@@ -116,7 +110,7 @@ export default function SendCryptoComponent({ balance, password }) {
                         </>
                     ) : (
                         <>
-                            <p>Transaction {status === 'success' ? 'completed successfully!' : 'failed!'}</p>
+                            <p>Transaction {status === 'succeeded' ? 'completed successfully!' : 'failed!'}</p>
                             <button className="btn btn-secondary" onClick={handleNewTransaction}>Send New Transaction</button>
                         </>
                     )}

@@ -13,7 +13,7 @@ const checkTransaction =   async (
     // Cast to validated schema type
     const status = await checkTransactionCompleted(transactionId)
 
-    return response(200, {transactionIsComplete: status});
+    return response(200, {status});
 }
 
 export const handler = createHandler(checkTransaction);

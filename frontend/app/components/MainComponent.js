@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useDynamicContext, useIsLoggedIn } from "@dynamic-labs/sdk-react-core";
 import './Methods.css';
-import { getOrCreateUser } from '../repo/vencuraBackendRepo';
+import {getBalance, getOrCreateUser} from '../repo/vencuraBackendRepo';
 import PasswordPrompt from './PasswordPrompt';
 import WalletInfo from '@/app/components/WalletInfoComponent';
 import SignMessage from '@/app/components/SignMessage';
@@ -12,6 +12,7 @@ export default function MainComponent() {
     const { sdkHasLoaded } = useDynamicContext();
     const [isLoading, setIsLoading] = useState(true);
     const [usersData, setUsersData ] = useState([]);
+    const [balance, setBalance] = useState(0);
     const [password, setPassword] = useState(''); // Track password
     const [isPasswordSubmitted, setIsPasswordSubmitted] = useState(false); // Track if password has been submitted
 
@@ -31,6 +32,11 @@ export default function MainComponent() {
         setIsPasswordSubmitted(true); // Mark password as submitted
     }
 
+    async function updateWallet(){
+        const balance= await getBalance();
+        setBalance(balance.balance);
+    }
+
 
     return (
         <>
@@ -42,9 +48,9 @@ export default function MainComponent() {
 
             {!isLoading && isLoggedIn && isPasswordSubmitted && (
                 <div>
-                    <WalletInfo walletAddress={usersData.address} balance={usersData.balance} />
+                    <WalletInfo walletAddress={usersData.address} balance={balance} updateBalance={updateWallet} />
                     <SignMessage password={password} />
-                    <SendCryptoComponent balance={usersData.balance} password={password} />
+                    <SendCryptoComponent balance={usersData.balance} password={password} refreshBalance={updateWallet}/>
                 </div>
             )}
         </>

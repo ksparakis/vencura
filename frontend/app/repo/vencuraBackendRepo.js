@@ -1,6 +1,11 @@
 
 async function getBalance() {
-    return makeAPIRequest('GET', `/wallet/balance`);
+    const balanceResponse = await makeAPIRequest('GET', `/wallet/balance`);
+    if (!balanceResponse) {
+        throw new Error('No balance');
+    }
+
+    return balanceResponse.json();
 }
 
 async function signMessage(message, password) {
@@ -18,12 +23,19 @@ async function getUser() {
     return makeAPIRequest('GET', `/user`);
 }
 
+
 async function sendTransaction(password, amount, to) {
-    return makeAPIRequest('POST', `/wallet/transaction`, {}, { password, to, amount });
+   const transactionRes = await makeAPIRequest('POST', `/wallet/transaction`,
+       {}, { password, to, amount });
+   const tx = await transactionRes.json();
+   return tx.transactionId;
 }
 
 async function checkTransaction(transactionId) {
-    return makeAPIRequest('GET', `/wallet/transaction/${transactionId}`);
+    const response = await makeAPIRequest('GET', `/wallet/transaction/${transactionId}`);
+    const body = await response.json()
+    console.log('Check Transaction successful:', body);
+    return body.status;
 }
 
 async function createUser(password) {
@@ -48,12 +60,8 @@ async function getOrCreateUser(password = '1234567') {
     console.log('userResponse', userResponse);
     const user = await userResponse.json();
     console.log('user', user);
-    const balanceResponse = await getBalance();
-    if (!balanceResponse) {
-        throw new Error('No balance');
-    }
+    const balance = await getBalance();
 
-    const balance = await balanceResponse.json();
     return { ...user['user'], ...balance };
 }
 
@@ -86,6 +94,7 @@ async function makeAPIRequest(method, url, headers= {}, body = undefined) {
 export {
     getUser,
     createUser,
+    getBalance,
     getOrCreateUser,
     getOtherUsers,
     signMessage,
