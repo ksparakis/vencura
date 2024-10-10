@@ -20,13 +20,13 @@ I implemented a serverless architecture for this project using AWS services.
 - **Ethers** - For communication with ethereum networks
 ## API Endpoints
 
-- **GET /user** - Fetch user details.
-- **POST /user** - Create a new user.
+- **GET /user** - Fetch user details using sub in JWT token.
+- **POST /user** - Create a new user, and an encrypted embedded wallet, encrypted with a password.
 - **GET /user/other** - Fetch details of other users.
 - **GET /wallet/balance** - Retrieve wallet balance.
 - **POST /wallet/sign** - Sign transactions.
-- **POST /wallet/transaction** - Submit a transaction.
-- **GET /wallet/transaction/:id** - Fetch transaction details by ID.
+- **POST /wallet/transaction** - Submit a transaction to the Transactions sqs queueu for processing.
+- **GET /wallet/transaction/:id** - Fetch transaction details by ID to see progress in queue.
 
 ## Transaction Processing with SQS
 
@@ -82,10 +82,3 @@ if it's called frequently, and if inactive for a certain period (usually around 
 
 By leveraging these optimizations, I ensured that the system scales efficiently while maintaining a smooth user experience. Future expansions can continue using this optimized framework, allowing for rapid, scalable deployments without the overhead of large, bloated packages.
 
-## Improvement TODOs:
-- Finalize **ESLint** cleanup and resolve typing issues.
-- Encrypt passwords before sending them to the SQS queue and decrypt them in the processing Lambda.
-- Refactor **Zod Validation** into a middleware with proper output typing.
-- Implement **Websockets** to track Ethereum transaction statuses.
-- Validate and type **authentication claims**.
-- Increase **Jest test coverage**.
