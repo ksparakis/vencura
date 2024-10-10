@@ -27,8 +27,25 @@ Cheers,
 
 Konstantinos Sparakis
 
+## How to Run
 
------
+1. Clone git repo locally
+2. Get a copy of the `.env` file from @Ksparaks, or fill out your own variables into the backend `.env`
+3. Inside the backend folder, run migrations if using your own database:
+   ```bash
+   npm run migrate:up
+   ```
+4. Run Backend locally: open a terminal, navigate to the backend folder, and run:
+   ```bash
+   npm i
+   npm run dev
+   ```
+5. Run Frontend: open a terminal, navigate to the frontend folder, and run:
+   ```bash
+   npm i
+   npm run dev
+   ```
+6. go to `localhost:3000`
 
 
 ## TODO's & Proggress
@@ -50,6 +67,8 @@ Konstantinos Sparakis
 - Buttons need to be debounced on api actions
 - Ensure password clears out on logout
 - Rework UI
+
+-----
 
 ## Backend Excersize Original Prompt
 
