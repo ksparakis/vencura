@@ -11,9 +11,9 @@ const checkTransaction =   async (
 ): Promise<APIGatewayProxyResult> => {
     const { transactionId } = validatePath(event, checkTransactionSchema);
     // Cast to validated schema type
-    const status = await checkTransactionCompleted(transactionId)
+    const tx = await checkTransactionCompleted(transactionId)
 
-    return response(200, {status});
+    return response(200, {status: tx.status, message: tx.message});
 }
 
 export const handler = createHandler(checkTransaction);

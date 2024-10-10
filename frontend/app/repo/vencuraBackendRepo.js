@@ -35,7 +35,7 @@ async function checkTransaction(transactionId) {
     const response = await makeAPIRequest('GET', `/wallet/transaction/${transactionId}`);
     const body = await response.json()
     console.log('Check Transaction successful:', body);
-    return body.status;
+    return body;
 }
 
 async function createUser(password) {

@@ -24,18 +24,24 @@ const processTransactionQueue =   async (
     };
 
 
-    // Step 4: Send the transaction
-    const transactionResponse = await wallet.sendTransaction(tx);
-    logger.info('Transaction sent:', transactionResponse.hash);
 
     // Step 5: Wait for the transaction to be mined
-    const receipt = await transactionResponse.wait();
-    logger.info('Transaction mined:', receipt);
+    try {
+        // Step 4: Send the transaction
+        const transactionResponse = await wallet.sendTransaction(tx);
+        logger.info('Transaction sent:', transactionResponse.hash);
 
-    if(!receipt || receipt.status === 0) {
-        await updateTransactionStatus(id, 'failed');
-    } else {
-        await updateTransactionStatus(id, 'succeeded');
+        const receipt = await transactionResponse.wait();
+        logger.info('Transaction mined:', receipt);
+
+        if (!receipt || receipt.status === 0) {
+            await updateTransactionStatus(id, 'failed', 'Transaction failed');
+        } else {
+            await updateTransactionStatus(id, 'succeeded', 'Transaction succeeded');
+        }
+    } catch (error: any) {
+        logger.error('Transaction failed:', error.message);
+        await updateTransactionStatus(id, 'failed', error.message);
     }
 
     return response(200, {});

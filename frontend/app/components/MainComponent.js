@@ -24,6 +24,9 @@ export default function MainComponent() {
                 setUsersData(user);
                 setIsLoading(false);
             });
+            getBalance().then((balance) => {
+                setBalance(balance.balance);
+            });
         }
     }, [sdkHasLoaded, isLoggedIn, isPasswordSubmitted, password]);
 
@@ -48,7 +51,7 @@ export default function MainComponent() {
 
             {!isLoading && isLoggedIn && isPasswordSubmitted && (
                 <div>
-                    <WalletInfo walletAddress={usersData.address} balance={balance} updateBalance={updateWallet} />
+                    <WalletInfo walletAddress={usersData.address} balance={balance} refreshBalance={updateWallet} />
                     <SignMessage password={password} />
                     <SendCryptoComponent balance={usersData.balance} password={password} refreshBalance={updateWallet}/>
                 </div>

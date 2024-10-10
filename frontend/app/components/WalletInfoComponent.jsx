@@ -2,7 +2,7 @@ import React from 'react';
 import './WalletInfo.css';
 
 
-export default function WalletInfo({ walletAddress, balance, updateWallet }) {
+export default function WalletInfo({ walletAddress, balance, refreshBalance }) {
     return (
         <div className="wallet-info-container">
             <div className="wallet-info">
@@ -15,7 +15,7 @@ export default function WalletInfo({ walletAddress, balance, updateWallet }) {
                     <span>{balance}</span>
                 </div>
                 <button className="wallet-refresh-button btn"
-                        onClick={updateWallet}>Refresh</button>
+                        onClick={refreshBalance}>Refresh</button>
             </div>
         </div>
     );

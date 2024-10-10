@@ -22,6 +22,9 @@ export class CryptoTransactions extends BaseEntity {
     @Column()
     amount: string
 
+    @Column()
+    message: string
+
     @Column({
         type: 'enum',
         enum: CryptoTransactionStatusEnum, // Use the TypeScript enum

@@ -20,7 +20,7 @@ async function newTransaction(
     return tx.save();
 }
 
-async function checkTransactionCompleted(id: string): Promise<CryptoTransactionStatus> {
+async function checkTransactionCompleted(id: string): Promise<CryptoTransactions> {
     const db = getDb();
     const tx = await db.getRepository(CryptoTransactions).findOneBy({id});
     if(!tx)
@@ -28,12 +28,12 @@ async function checkTransactionCompleted(id: string): Promise<CryptoTransactionS
         throw new createHttpError.NotFound('Transaction not found');
     }
 
-    return tx.status
+    return tx
 }
 
-async function updateTransactionStatus(transactionId: string, status: CryptoTransactionStatus): Promise<UpdateResult>{
+async function updateTransactionStatus(transactionId: string, status: CryptoTransactionStatus,  message: string,): Promise<UpdateResult>{
     const db = getDb();
-    return await db.getRepository(CryptoTransactions).update({id: transactionId}, {status});
+    return await db.getRepository(CryptoTransactions).update({id: transactionId}, {status, message});
 }
 
 

@@ -10,6 +10,7 @@ export default function SendCryptoComponent({ balance, password, refreshBalance 
     const [transactionId, setTransactionId] = useState(null);
     const [recipients, setRecipients] = useState([]);
     const [status, setStatus] = useState(null);
+    const [completionMessage, setCompletionMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -41,9 +42,10 @@ export default function SendCryptoComponent({ balance, password, refreshBalance 
 
             // Poll for the transaction status every 10 seconds
             const intervalId = setInterval(async () => {
-                const status = await checkTransaction(transactionId);
-                if (status === 'failed' || status === 'succeeded') {
-                    setStatus(status);
+                const tx = await checkTransaction(transactionId);
+                if (tx.status === 'succeeded' || tx.status === 'failed') {
+                    setStatus(tx.status);
+                    setCompletionMessage(tx.message);
                     setIsLoading(false);
                     refreshBalance();
                     clearInterval(intervalId); // Stop polling once resolved
@@ -111,7 +113,10 @@ export default function SendCryptoComponent({ balance, password, refreshBalance 
                     ) : (
                         <>
                             <p>Transaction {status === 'succeeded' ? 'completed successfully!' : 'failed!'}</p>
-                            <button className="btn btn-secondary" onClick={handleNewTransaction}>Send New Transaction</button>
+                            <p></p>
+                            <pre className="signed-message">{status === 'failed' ? completionMessage: ''}</pre>
+                            <button className="btn btn-secondary" onClick={handleNewTransaction}>Send New Transaction
+                            </button>
                         </>
                     )}
                 </div>
