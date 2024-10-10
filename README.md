@@ -1,4 +1,5 @@
-# Vencura
+![Vencura Logo](https://github.com/ksparakis/vencura/blob/main/frontend/public/vencura-light.png?raw=true)
+
 
 ## Introduction
 I built a crypto Venmo-like app as part of a backend challange with the following features:
