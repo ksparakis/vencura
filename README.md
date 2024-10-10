@@ -1,5 +1,7 @@
 ![Vencura Logo](https://github.com/ksparakis/vencura/blob/main/frontend/public/vencura-light.png?raw=true)
 
+> ⚠️ **Warning:** Do not use a real password for your wallet.
+
 
 ## Introduction
 I built a crypto Venmo-like app as part of a backend challange with the following features:
@@ -7,6 +9,7 @@ I built a crypto Venmo-like app as part of a backend challange with the followin
 - Users can log in with various social accounts or a wallet.
 - On account creation, an embedded wallet is encrypted with a user-defined password and stored securely.
 - Users can send money, sign a message, & check their balance.
+- Works on the Sepolia Network
 
 
 The app uses an AWS Serverless TypeScript backend and a Next.js frontend deployed on Vercel. My focus was to build a functional, production-ready product within a few days, showcasing:
