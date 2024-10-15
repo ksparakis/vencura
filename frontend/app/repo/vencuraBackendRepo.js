@@ -53,9 +53,14 @@ function getToken() {
 
 async function getOrCreateUser(password) {
     let userResponse;
-    userResponse = await getUser();
-    console.log(userResponse)
-    if (userResponse.status >= 400) {
+    let errorOccured = false;
+    try{
+        userResponse = await getUser();
+    } catch (error: any) {
+        console.log(error)
+        errorOccured = true;
+    }
+    if (userResponse.status >= 400 || errorOccured) {
         userResponse = await createUser(password);
     }
     console.log('userResponse', userResponse);
