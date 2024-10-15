@@ -51,10 +51,11 @@ function getToken() {
     return token.replace(/^"|"$/g, ''); // Removes leading and trailing quotes
 }
 
-async function getOrCreateUser(password = '1234567') {
+async function getOrCreateUser(password) {
     let userResponse;
     userResponse = await getUser();
-    if (userResponse.status === 404) {
+    console.log(userResponse)
+    if (userResponse.status >= 400) {
         userResponse = await createUser(password);
     }
     console.log('userResponse', userResponse);
