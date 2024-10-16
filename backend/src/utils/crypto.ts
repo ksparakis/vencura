@@ -53,7 +53,7 @@ function decrypt(encryptedText: string, password: string, sub: string) {
     } catch (error: any) {
 
         logger.error('Invalid password', {error});
-        throw new createHttpError.BadRequest('Invalid password');
+        throw new createHttpError.Unauthorized('Invalid password');
     }
 
 }
@@ -64,5 +64,6 @@ function deriveKey(password: string, salt: string) {
 
 export{
     encrypt,
-    decrypt
+    decrypt,
+    deriveKey
 }

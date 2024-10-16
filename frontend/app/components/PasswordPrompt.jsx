@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function PasswordPrompt({ onPasswordSubmit }) {
+export default function PasswordPrompt({ onPasswordSubmit, passwordError }) {
     const [password, setPassword] = useState(''); // Local state for the password
 
     function handleSubmit(event) {
@@ -19,8 +19,10 @@ export default function PasswordPrompt({ onPasswordSubmit }) {
                     onChange={(e) => setPassword(e.target.value)} // Update password state
                     required
                 />
+                <p className="password-error">{passwordError}</p>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+
         </div>
     );
 }
