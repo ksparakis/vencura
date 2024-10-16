@@ -1,13 +1,12 @@
-import type {APIGatewayEvent, APIGatewayProxyResult, SQSEvent} from 'aws-lambda'
+import type { APIGatewayProxyResult, SQSEvent } from 'aws-lambda'
 import { response } from '../utils/response';
-import {createHandler, createSQSHandler} from '../middleware/middleware';
+import { createSQSHandler } from '../middleware/middleware';
 import { getLogger } from '../middleware/logger';
-import {validateSQSBody} from "../utils/zodValidators";
-import {processTransactionSchema} from "../schemas";
-import {getProvider} from "../repos/walletUtil";
+import { validateSQSBody } from "../utils/zodValidators";
+import { processTransactionSchema } from "../schemas";
 import { parseEther } from "ethers";
-import {getWalletForUser} from "../utils/common";
-import {updateTransactionStatus} from "../repos/cryptoTransactionsRepo";
+import { getWalletForUser } from "../utils/common";
+import { updateTransactionStatus } from "../repos/cryptoTransactionsRepo";
 
 
 const processTransactionQueue =   async (

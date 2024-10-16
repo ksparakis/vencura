@@ -119,12 +119,12 @@ functions:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
           cors: true
-  getUser:
-    handler: src/handlers/getUser.handler
+  verifyUser:
+    handler: src/handlers/verifyUser.handler
     events:
       - http:
-          path: user
-          method: GET
+          path: user/verify
+          method: POST
           authorizer:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization

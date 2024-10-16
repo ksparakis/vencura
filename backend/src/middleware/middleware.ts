@@ -17,10 +17,10 @@ const corsOptions: CorsOptions= {
 
 export function createHandler(handlerFunction: any) {
     const middyHandler = middy(handlerFunction)
+        .use(httpCors(corsOptions))
         .use(httpErrorHandlerMiddleware())
         .use(httpHeaderNormalizer())
         .use(httpSecurityHeaders())
-        .use(httpCors(corsOptions))
         .use(jsonBodyParser())
         .use(loggerMiddleware())
         .use(dbMiddleware());

@@ -15,12 +15,11 @@ async function signMessage(message, password) {
         {},
         { message, password }
     );
-    console.log(signResponse);
     return signResponse.json();
 }
 
-async function getUser() {
-    return makeAPIRequest('GET', `/user`);
+async function verifyUser(password) {
+    return makeAPIRequest('POST', `/user/verify`, {}, {password});
 }
 
 
@@ -34,7 +33,6 @@ async function sendTransaction(password, amount, to) {
 async function checkTransaction(transactionId) {
     const response = await makeAPIRequest('GET', `/wallet/transaction/${transactionId}`);
     const body = await response.json()
-    console.log('Check Transaction successful:', body);
     return body;
 }
 
@@ -55,17 +53,19 @@ async function getOrCreateUser(password) {
     let userResponse;
     let errorOccured = false;
     try{
-        userResponse = await getUser();
+        userResponse = await verifyUser(password);
     } catch (error) {
         console.log(error)
         errorOccured = true;
     }
+
+    if(userResponse.status === 401) {
+        throw new Error('Wrong Password');
+    }
     if (userResponse.status >= 400 || errorOccured) {
         userResponse = await createUser(password);
     }
-    console.log('userResponse', userResponse);
     const user = await userResponse.json();
-    console.log('user', user);
     const balance = await getBalance();
 
     return { ...user['user'], ...balance };
@@ -98,7 +98,7 @@ async function makeAPIRequest(method, url, headers= {}, body = undefined) {
 }
 
 export {
-    getUser,
+    verifyUser,
     createUser,
     getBalance,
     getOrCreateUser,
