@@ -56,7 +56,7 @@ async function getOrCreateUser(password) {
     let errorOccured = false;
     try{
         userResponse = await getUser();
-    } catch (error: any) {
+    } catch (error) {
         console.log(error)
         errorOccured = true;
     }
