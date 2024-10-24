@@ -1,3 +1,4 @@
+import {rsaEncrypt} from '@/app/repo/crypto';
 
 async function getBalance() {
     const balanceResponse = await makeAPIRequest('GET', `/wallet/balance`);
@@ -22,6 +23,14 @@ async function verifyUser(password) {
     return makeAPIRequest('POST', `/user/verify`, {}, {password});
 }
 
+async function getEncryptionKey() {
+    const response = await makeAPIRequest('GET', `/user/key`);
+    return await response.json();
+}
+
+async function changeNetwork(network) {
+    return makeAPIRequest('PUT', `/user/network`, {}, {network});
+}
 
 async function sendTransaction(password, amount, to) {
    const transactionRes = await makeAPIRequest('POST', `/wallet/transaction`,
@@ -51,9 +60,20 @@ function getToken() {
 
 async function getOrCreateUser(password) {
     let userResponse;
+    let encryptionKey;
     let errorOccured = false;
     try{
-        userResponse = await verifyUser(password);
+       const getEncryptionRes = await getEncryptionKey();
+         encryptionKey = getEncryptionRes.publicKey;
+    } catch (error) {
+        console.log(error)
+        errorOccured = true;
+    }
+
+    const encryptedPassword = await rsaEncrypt(password, encryptionKey);
+    console.log(encryptedPassword)
+    try{
+        userResponse = await verifyUser(encryptedPassword);
     } catch (error) {
         console.log(error)
         errorOccured = true;
@@ -63,12 +83,12 @@ async function getOrCreateUser(password) {
         throw new Error('Wrong Password');
     }
     if (userResponse.status >= 400 || errorOccured) {
-        userResponse = await createUser(password);
+        userResponse = await createUser(encryptedPassword);
     }
     const user = await userResponse.json();
     const balance = await getBalance();
 
-    return { ...user['user'], ...balance };
+    return { ...user['user'], ...balance, encryptedPassword };
 }
 
 async function getOtherUsers() {
@@ -105,5 +125,7 @@ export {
     getOtherUsers,
     signMessage,
     sendTransaction,
-    checkTransaction
+    checkTransaction,
+    changeNetwork,
+    getEncryptionKey
 }

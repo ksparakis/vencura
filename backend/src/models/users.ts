@@ -18,4 +18,10 @@ export class User extends BaseEntity {
 
     @Column()
     address: string
+
+    @Column({ nullable: true })
+    passwordEncryptionPvtKey?: string
+
+    @Column()
+    selectedNetwork: string
 }

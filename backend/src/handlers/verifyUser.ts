@@ -18,6 +18,7 @@ const verifyUser =   async (
     logger.debug('getUser handler called', {event: event.requestContext.authorizer});
     const user= await getUserBySub(sub);
     decrypt(user.encryptedMnemonic, password, sub);
+    delete user.passwordEncryptionPvtKey;
 
     return response(200, {user});
 }

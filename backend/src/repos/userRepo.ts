@@ -39,7 +39,9 @@ async function createNewUser(sub: string, email: string, encryptedMnemonic: stri
         email,
         encryptedMnemonic,
         address,
-        publicKey
+        publicKey,
+        selectedNetwork: 'sepolia',
+        passwordEncryptionPvtKey: undefined
     });
 
     return user.save();
@@ -61,6 +63,35 @@ const retrieveAllUsersExcludingSub = async (sub: string): Promise<User[]> => {
     return users;
 }
 
+async function saveEncryptionPvtKey(sub: string, key: string): Promise<User> {
+    const db = getDb();
+    const logger = getLogger();
+    logger.debug('Saving encryption private key', {sub});
+    const user = await db.getRepository(User).findOneBy({sub});
+    if(user === null) {
+        throw createHttpError.NotFound('User not found');
+    }
+    user.passwordEncryptionPvtKey = key;
+    return user.save();
+}
+
+async function updateSelectedNetwork(sub: string, network: string): Promise<User> {
+    const db = getDb();
+    const logger = getLogger();
+    logger.debug('Updating selected network', {sub, network});
+    const user = await db.getRepository(User).findOneBy({sub});
+    if(user === null) {
+        throw createHttpError.NotFound('User not found');
+    }
+    user.selectedNetwork = network;
+    return user.save();
+}
+
 export{
-    getUserBySub, createNewUser, getUsersWalletAddress, retrieveAllUsersExcludingSub
+    getUserBySub,
+    createNewUser,
+    getUsersWalletAddress,
+    retrieveAllUsersExcludingSub,
+    saveEncryptionPvtKey,
+    updateSelectedNetwork
 }

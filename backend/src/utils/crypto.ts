@@ -1,6 +1,7 @@
-import crypto from "crypto";
-import createHttpError from "http-errors";
-import {getLogger} from "../middleware/logger";
+import crypto from 'crypto';
+import createHttpError from 'http-errors';
+import {getLogger} from '../middleware/logger';
+
 
 const IV_LENGTH = 16; // IV should be 16 bytes for AES
 
@@ -62,8 +63,50 @@ function deriveKey(password: string, salt: string) {
     return crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256');
 }
 
-export{
+// Function to generate a private-public key pair using ECC
+async function createRSAKeyPair(): Promise<{ publicKey: string; privateKey: string; }> {
+    const { generateKeyPairSync } = await import('node:crypto');
+    return generateKeyPairSync('rsa',
+        {
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: 'spki',
+                format: 'pem'
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem',
+            }
+        });
+}
+
+
+async function rsaEncrypt(publicKey: string, text: string): Promise<string> {
+    const { publicEncrypt } = await import('node:crypto');
+    const encryptedMessage = publicEncrypt(publicKey, Buffer.from(text, 'utf8'));
+    return encryptedMessage.toString('base64');
+}
+
+async function rsaDecrypt(privateKey: string, encrypted: string): Promise<string> {
+    const { privateDecrypt } = await import('node:crypto');
+    const key = Buffer.from(privateKey);
+    const decryptedMessage = privateDecrypt(
+        {
+            key,
+            passphrase: '', // Match the passphrase used during key generation (if any)
+        },
+        Buffer.from(encrypted, 'base64')
+    );
+
+    return  decryptedMessage.toString('utf8');
+}
+
+
+export {
     encrypt,
     decrypt,
-    deriveKey
+    deriveKey,
+    createRSAKeyPair,
+    rsaEncrypt,
+    rsaDecrypt,
 }

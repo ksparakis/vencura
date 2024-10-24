@@ -20,6 +20,10 @@ const checkTransactionSchema = z.object({
     transactionId: z.string()
 });
 
+const changeNetworkSchema = z.object({
+    network: z.enum(['polygon-testnet', 'sepolia'])
+});
+
 // Define the schema for the payload
 const payloadSchema = z.object({
     id: z.string(),
@@ -41,5 +45,6 @@ export{
     signMessageSchema,
     sendTransactionSchema,
     checkTransactionSchema,
-    processTransactionSchema
+    processTransactionSchema,
+    changeNetworkSchema
 }

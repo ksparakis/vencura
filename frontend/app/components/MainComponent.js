@@ -7,6 +7,7 @@ import PasswordPrompt from './PasswordPrompt';
 import WalletInfo from '@/app/components/WalletInfoComponent';
 import SignMessage from '@/app/components/SignMessage';
 import SendCryptoComponent from '@/app/components/SendCryptoComponent';
+import NetworkSelector from '@/app/components/NetworkSelector';
 export default function MainComponent() {
     const isLoggedIn = useIsLoggedIn();
     const { sdkHasLoaded } = useDynamicContext();
@@ -30,7 +31,8 @@ export default function MainComponent() {
             getBalance().then((balance) => {
                 setBalance(balance.balance);
             });
-            setPassword(submittedPassword);
+            console.log(user)
+            setPassword(user.encryptedPassword);
             setIsPasswordSubmitted(true); // Mark password as submitted
         }).catch((error) => {
             console.error('Error getting user:', error);
@@ -55,6 +57,7 @@ export default function MainComponent() {
 
             {!isLoading && isLoggedIn && isPasswordSubmitted && (
                 <div>
+                    <NetworkSelector />
                     <WalletInfo walletAddress={usersData.address} balance={balance} refreshBalance={updateWallet} />
                     <SignMessage password={password} />
                     <SendCryptoComponent balance={usersData.balance} password={password} refreshBalance={updateWallet}/>

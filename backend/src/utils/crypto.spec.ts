@@ -1,8 +1,7 @@
-import crypto from "crypto";
-import createHttpError from "http-errors";
-import { encrypt, decrypt, deriveKey } from "./crypto"; // Adjust the path as necessary
-import { getLogger } from "../middleware/logger";
-import { getConfig } from "../utils/config"; // Adjust this import as necessary
+import crypto from 'crypto';
+import { encrypt, decrypt, deriveKey, createRSAKeyPair, rsaEncrypt, rsaDecrypt } from './crypto'; // Adjust the path as necessary
+import { getLogger } from '../middleware/logger';
+import { getConfig } from '../utils/config'; // Adjust this import as necessary
 
 // Mocking dependencies
 jest.mock("crypto");
@@ -67,4 +66,47 @@ describe("Crypto Util", () => {
             expect(result).toBe("decrypted-part-1decrypted-part-2");
         });
     });
+
+
+    describe('RSA Key Pair Generation, Encryption, and Decryption', () => {
+
+        test('should generate a valid RSA key pair', async () => {
+            const { publicKey, privateKey } = await createRSAKeyPair();
+
+            // Check that the public key and private key are in PEM format
+            expect(publicKey).toBeDefined();
+            expect(publicKey).toContain('BEGIN PUBLIC KEY');
+            expect(privateKey).toBeDefined();
+            expect(privateKey).toContain('-----BEGIN PRIVATE KEY-----');
+        });
+
+        test('should encrypt and decrypt a message successfully', async () => {
+            const { publicKey, privateKey } = await createRSAKeyPair();
+            const message = "Hello, this is a secret message";
+
+            // Encrypt the message with the public key
+            const encryptedMessage = await rsaEncrypt(publicKey, message);
+            expect(encryptedMessage).toBeDefined();
+            expect(typeof encryptedMessage).toBe('string');
+
+            // Decrypt the message with the private key
+            const decryptedMessage = await rsaDecrypt(privateKey, encryptedMessage);
+            expect(decryptedMessage).toBe(message);
+        });
+
+        test('should fail decryption with a wrong private key', async () => {
+            const { publicKey } = await createRSAKeyPair();
+            const { privateKey: wrongPrivateKey } = await createRSAKeyPair();
+            const message = "This message cannot be decrypted with the wrong key";
+
+            // Encrypt the message with the correct public key
+            const encryptedMessage = await rsaEncrypt(publicKey, message);
+
+            // Try to decrypt with the wrong private key
+            await expect(rsaDecrypt(wrongPrivateKey, encryptedMessage)).rejects.toThrow();
+
+        });
+    });
 });
+
+

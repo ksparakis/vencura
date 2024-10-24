@@ -14,13 +14,24 @@ function validateBody<TBody>(event: APIGatewayProxyEvent, bodySchema: ZodType<TB
     }
 }
 
-function validateQuery<TQuery>(event: APIGatewayProxyEvent, querySchema: ZodType<TQuery>): TQuery {
+
+function validateQuery<TQuery extends ZodType<any>>(event: APIGatewayProxyEvent, querySchema: TQuery): Zod.infer<TQuery> {
     if (!event.queryStringParameters) {
         throw new createError.BadRequest("Query string parameters are required but were not provided.");
     }
 
     try {
-        return querySchema.parse(event.queryStringParameters);
+        // Parse query string parameters with schema
+        const parsedQuery = querySchema.parse(event.queryStringParameters);
+
+        // Check for any NaN values after parsing
+        for (const key in parsedQuery) {
+            if (typeof parsedQuery[key] === 'number' && isNaN(parsedQuery[key])) {
+                throw new createError.BadRequest(`Invalid query string parameters: ${key} is not a valid number`);
+            }
+        }
+
+        return parsedQuery;
     } catch (error: any) {
         throw new createError.BadRequest(`Invalid query string parameters: ${error.message}`);
     }
