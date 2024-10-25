@@ -5,6 +5,7 @@ import {getClaims} from "../utils/common";
 import {response} from "../utils/response";
 import {validateBody} from "../utils/zodValidators";
 import {changeNetworkSchema} from "../schemas";
+import {getLogger} from "../middleware/logger";
 
 
 const changeNetwork =   async (
@@ -12,6 +13,8 @@ const changeNetwork =   async (
 ): Promise<APIGatewayProxyResult> => {
     const { sub } = getClaims(event);
     const {network}  = validateBody(event, changeNetworkSchema);
+    const logger = getLogger()
+    logger.debug('Change network handler called', {sub, network});
     await updateSelectedNetwork(sub, network);
     return response(200, {});
 }

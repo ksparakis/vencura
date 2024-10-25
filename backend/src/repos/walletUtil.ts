@@ -13,7 +13,10 @@ function getProvider(network: string = 'sepolia'): InfuraProvider{
 }
 
 async function getBalance(provider: ethers.InfuraProvider, walletAddress: string): Promise<string>{
+    const logger = getLogger();
+    logger.debug('Getting balance', {walletAddress, network: await provider.getNetwork()});
     const balanceWei = await provider.getBalance(walletAddress);
+    logger.debug('Got balance', {balanceWei});
     return ethers.formatEther(balanceWei);
 }
 

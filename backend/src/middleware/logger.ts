@@ -40,7 +40,6 @@ export const getLogger = (): Logger => {
 export const loggerMiddleware = (): MiddlewareObj<any, any> => {
     return {
         before: (handler: any ) => {
-            console.log("LOGGER")
             if (!logger) {
                 initLogger(); // Initialize the logger if it hasn't been already
             }

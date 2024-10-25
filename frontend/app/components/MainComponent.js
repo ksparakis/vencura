@@ -18,20 +18,17 @@ export default function MainComponent() {
     const [password, setPassword] = useState(''); // Track password
     const [isPasswordSubmitted, setIsPasswordSubmitted] = useState(false); // Track if password has been submitted
 
-
     useEffect(() => {
     }, [sdkHasLoaded, isLoggedIn, isPasswordSubmitted, password]);
 
     function handlePasswordSubmit(submittedPassword) {
         setPasswordError(null);
         getOrCreateUser(submittedPassword).then((user) => {
-            console.log(user)
             setUsersData(user);
             setIsLoading(false);
             getBalance().then((balance) => {
                 setBalance(balance.balance);
             });
-            console.log(user)
             setPassword(user.encryptedPassword);
             setIsPasswordSubmitted(true); // Mark password as submitted
         }).catch((error) => {
@@ -57,7 +54,7 @@ export default function MainComponent() {
 
             {!isLoading && isLoggedIn && isPasswordSubmitted && (
                 <div>
-                    <NetworkSelector />
+                    <NetworkSelector refreshBalance={updateWallet} network={usersData.selectedNetwork} />
                     <WalletInfo walletAddress={usersData.address} balance={balance} refreshBalance={updateWallet} />
                     <SignMessage password={password} />
                     <SendCryptoComponent balance={usersData.balance} password={password} refreshBalance={updateWallet}/>

@@ -89,14 +89,18 @@ async function rsaEncrypt(publicKey: string, text: string): Promise<string> {
 
 async function rsaDecrypt(privateKey: string, encrypted: string): Promise<string> {
     const { privateDecrypt } = await import('node:crypto');
+    const logger = getLogger();
+    logger.debug('Decrypting RSA encrypted password');
     const key = Buffer.from(privateKey);
     const decryptedMessage = privateDecrypt(
         {
             key,
+            oaepHash: 'sha256',
             passphrase: '', // Match the passphrase used during key generation (if any)
         },
         Buffer.from(encrypted, 'base64')
     );
+    logger.debug('Succesfully unencrypted rsa password');
 
     return  decryptedMessage.toString('utf8');
 }

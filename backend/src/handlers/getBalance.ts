@@ -1,7 +1,7 @@
 import type {APIGatewayProxyEvent, APIGatewayProxyResult, Context} from 'aws-lambda'
 import { response } from '../utils/response';
 import { createHandler } from '../middleware/middleware';
-import { getUsersWalletAddress } from "../repos/userRepo";
+import {getUserBySub, getUsersWalletAddress} from "../repos/userRepo";
 import { getBalance, getProvider } from "../repos/walletUtil";
 import {getClaims} from "../utils/common";
 
@@ -10,13 +10,12 @@ const getBalanceRequest =   async (
     event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
     const { sub } = getClaims(event)
-    const address = await getUsersWalletAddress(sub);
+    const user = await getUserBySub(sub);
 
     try {
         // Get the balance
-        const provider = getProvider();
-        const balance = await getBalance(provider, address);
-
+        const provider = getProvider(user.selectedNetwork);
+        const balance = await getBalance(provider, user.address);
         return response(200, { balance });
     } catch (err: any) {
         return response(500, { error: err });

@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import './NetworkSelector.css';
 import {changeNetwork} from '@/app/repo/vencuraBackendRepo'; // Include the CSS file
 
-export default function NetworkSelector({}) {
-    const [selectedNetwork, setSelectedNetwork] = useState('sepolia');
+export default function NetworkSelector({ refreshBalance, network }) {
+    const [selectedNetwork, setSelectedNetwork] = useState(network);
 
     async function handleNetworkChange(event) {
-
-
+        const network = event.target.value;
         try {
-            await changeNetwork(network); // Call the async function to handle network change
-            console.log(`Network successfully changed to: ${network}`);
-            const network = event.target.value;
-            setSelectedNetwork(network);
+            changeNetwork(event.target.value).then(()=>{
+                setSelectedNetwork(network);
+                refreshBalance();
+            }).catch(()=>{
+                alert('Failed to change network');
+            })
+
+
         } catch (error) {
             console.error(`Failed to change network: ${error}`);
         }
@@ -28,7 +31,7 @@ export default function NetworkSelector({}) {
                 onChange={handleNetworkChange}
             >
                 <option value="sepolia">Sepolia</option>
-                <option value="polygon-test">Polygon Test</option>
+                <option value="matic-amoy">Polygon Test</option>
             </select>
         </div>
     );

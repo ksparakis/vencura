@@ -68,6 +68,7 @@ async function getOrCreateUser(password) {
     } catch (error) {
         console.log(error)
         errorOccured = true;
+        throw new Error('Encryption Error');
     }
 
     const encryptedPassword = await rsaEncrypt(password, encryptionKey);
@@ -87,7 +88,7 @@ async function getOrCreateUser(password) {
     }
     const user = await userResponse.json();
     const balance = await getBalance();
-
+    console.log(user)
     return { ...user['user'], ...balance, encryptedPassword };
 }
 

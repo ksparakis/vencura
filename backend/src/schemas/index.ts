@@ -21,7 +21,7 @@ const checkTransactionSchema = z.object({
 });
 
 const changeNetworkSchema = z.object({
-    network: z.enum(['polygon-testnet', 'sepolia'])
+    network: z.enum(['matic-amoy', 'sepolia'])
 });
 
 // Define the schema for the payload
