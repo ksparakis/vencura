@@ -3,24 +3,27 @@ import {getLogger} from "../middleware/logger";
 import {getConfig} from "../utils/config";
 import createHttpError from "http-errors";
 
-function getProvider(): InfuraProvider{
+function getProvider(network: string = 'sepolia'): InfuraProvider{
     const config = getConfig();
     return new ethers.InfuraProvider(
-        config.INFURA_NETWORK,
+        network,
         config.INFURA_PROJECT_ID,
         config.INFURA_SECRET
     )
 }
 
 async function getBalance(provider: ethers.InfuraProvider, walletAddress: string): Promise<string>{
+    const logger = getLogger();
+    logger.debug('Getting balance', {walletAddress, network: await provider.getNetwork()});
     const balanceWei = await provider.getBalance(walletAddress);
+    logger.debug('Got balance', {balanceWei});
     return ethers.formatEther(balanceWei);
 }
 
 
-function getWallet(mnemonic: string): HDNodeWallet {
+function getWallet(mnemonic: string, network: string = 'sepolia'): HDNodeWallet {
     const logger = getLogger();
-    const provider = getProvider();
+    const provider = getProvider(network);
     const wallet = ethers.Wallet.fromPhrase(mnemonic, provider)
     if (!wallet.address) {
         logger.error('No wallet address found', {wallet});
@@ -43,5 +46,6 @@ async function sendTransaction(wallet: HDNodeWallet, tx: TransactionRequest): Pr
 export {
     getProvider,
     getBalance,
-    getWallet
+    getWallet,
+    sendTransaction
 }

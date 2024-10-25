@@ -3,7 +3,6 @@ import { response } from '../utils/response';
 import {createHandler} from '../middleware/middleware';
 import { signMessageSchema} from '../schemas';
 import {validateBody} from '../utils/zodValidators';
-import {getLogger} from '../middleware/logger';
 
 import {getClaims, getWalletForUser} from "../utils/common";
 

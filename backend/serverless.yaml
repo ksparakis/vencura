@@ -139,8 +139,31 @@ functions:
             name: dynamicAuthorizer
             identitySource: method.request.header.Authorization
           cors: true
+  getEncryptionKey:
+    handler: src/handlers/getEncryptionKey.handler
+    events:
+      - http:
+          path: user/key
+          method: GET
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
+          cors: true
+  changeNetwork:
+    handler: src/handlers/changeNetwork.handler
+    events:
+      - http:
+          path: user/network
+          method: PUT
+          authorizer:
+            name: dynamicAuthorizer
+            identitySource: method.request.header.Authorization
+          cors: true
   dynamicAuthorizer:
     handler: src/handlers/dynamicAuthorizer.handler
+
+
+
 
   # 1 message per lambda By default, AWS Lambda allows
   # 1,000 concurrent executions per AWS account in a region,

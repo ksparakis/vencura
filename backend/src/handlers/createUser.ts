@@ -27,9 +27,10 @@ const createUser =   async (
         email,
         encryptedMnemonic,
         wallet.address,
-        wallet.publicKey
+        wallet.publicKey,
     );
 
+    delete newUser.passwordEncryptionPvtKey;
 
     return response(200, {user: newUser});
 }
