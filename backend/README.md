@@ -1,6 +1,8 @@
 ## Backend Introduction
 
-I implemented a serverless architecture for this project using AWS services.
+I implemented a serverless architecture for this project using AWS services. The core functionality of the backend is to allow to sign up and create a new embedded wallet on our server using a mnmonic generation. This wallet is encrypted on our end, with a password the user submits, that is also encrypted further on the frontend with a public/private key combo. This ensures the plain text password is never exposed even if https is. The encryption of the wallet ensures that no one with access to the database can maliciously use the wallet in this.
+
+User can then sign messages, change networks to polygon/ethereum test nets, and send eth to other users in the system.
 
 ### Cloud Technologies:
 - **AWS Lambda & Lambda Layers** - Function execution and shared dependencies.
@@ -18,27 +20,32 @@ I implemented a serverless architecture for this project using AWS services.
 - **TypeORM** - For database migrations, model definitions, and interactions.
 - **Middy** - Middleware engine for handling Lambda middleware. I developed custom middleware plugins.
 - **Ethers** - For communication with ethereum networks
+
 ## API Endpoints
 
 - **GET /user** - Fetch user details using sub in JWT token.
 - **POST /user** - Create a new user, and an encrypted embedded wallet, encrypted with a password.
+- **GET /user/key** - Generates a new public/private key for the user to encrypt their password with when transmitting to the backend.
+- **GET /user/verify** - given the password a user has submitted, it will verify that the user inputted the correct password that the wallet is encrypted with.
+- **PUT /user/network** -  Allows the user to change networks between ploygon testnet and ethereum
 - **GET /user/other** - Fetch details of other users.
 - **GET /wallet/balance** - Retrieve wallet balance.
 - **POST /wallet/sign** - Sign transactions.
 - **POST /wallet/transaction** - Submit a transaction to the Transactions sqs queueu for processing.
 - **GET /wallet/transaction/:id** - Fetch transaction details by ID to see progress in queue.
 
-## Transaction Processing with SQS
+## Crypto Transaction Processing with SQS and Serverless functions
 
 Since Ethereum and many blockchain transactions can take time, I used SQS to manage long-running processes. API Gateway's 30-second timeout necessitated this, as SQS allows for decoupling and handling transactions asynchronously.
 
-The flow being the following
-User initiates a transaction with POST /wallet/transaction, we save some transaction data to database, but then create a
-message with the transaction data and put it into our sqs queue. AWS then launches our processTransaction lambda to complete the transaction.
-We add an artificial timeout at 5 minutes here to prevent the lambda from running up to 15 min or more.
+The flow being the following:
+* User initiates a transaction with POST /wallet/transaction
+* Save some transaction data to database, but then create a message with the transaction data and put it into our sqs queue.
+* AWS then launches our processTransaction lambda to complete the transaction.
+* We add an artificial timeout at 5 minutes here to prevent the lambda from running up to 15 min or more.
+* The client has to pint the GET /wallet/transaction/:id endpoint to check the status of the transaction periodically. (a further improvement would be to use a websocket here instead)
 
-The client has to pint the GET /wallet/transaction/:id endpoint to check the status of the transaction periodically.
-(a further improvement would be to use a websocket here instead)
+  
 ## Optimized Deployment
 
 In a typical Serverless deployment, everything is packaged into a single deployment bundle.
